@@ -360,7 +360,7 @@ void FmodAudioSystem::UnloadBank(const String& bankName)
         {
             bank.Value->unload();
             FMODLOG(Info, "Bank {} unloaded.", bank.Key);
-            _loadedBanks.Remove(bank);
+            _loadedBanks.Remove(bank.Key);
             break;
         }
     }
