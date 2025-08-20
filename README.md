@@ -26,12 +26,12 @@ To add this plugin project to your game, follow the instructions in the [Flax En
 8. Once you have events in your FMOD project, in the Flax Editor top menu click the "Plugins->Build Fmod Project option". This will automatically build the FMOD project and generate `FmodEvent`s in the editor. Note: this will take a little bit. Once it is completed a FMOD alert will popup saying that the files have been generated.
 9. Create an `FmodAudioSource` and an `FmodAudioListener` in a scene by right clicking in the scene heiarchy window and going to "New->Audio" context menu.. You can adjust any settings needed.
 10. Assign the `FmodEvent` to the `FmodAudioSource`.
-11. Disable the Flax Engine audio in the `AudioSetting`s, unless you want to use both...
+11. Disable the Flax Engine audio in the `AudioSettings`, unless you want to use both...
 12. Play the scene and hear the music!
 
 ## Important classes
 - `FmodAudioSource` - the Actor used to create an FMOD event instance and play the instance in the world.
 - `FmodAudioListenter` - the Actor used to hear the event's play in the world. As of right now, only one audio listener is recommeded in the world.
 - `FmodAudio` - a static class that can be used to interface with global parameters and devices.
-- `FmodAuioSystem` - the backend system that handles creating the FMOD systems.
+- `FmodAudioSystem` - the backend system that handles creating the FMOD systems.
 - `FmodAudioDevice` - a class that contains the name of an audio device.
