@@ -95,7 +95,7 @@ public class FmodEditorSystem : EditorPlugin
             var builtBankFolderPath = Path.Combine(GameCooker.CurrentData.DataOutputPath, settings.BuiltProjectBankRelativeFolderPath);
 
             // TODO: Get specific bank folder based on platform.
-            var editorBankFolderPath = Path.Combine(Globals.ProjectFolder, settings.EditorBankRelativeFolderPath, "Build", "Desktop");
+            var editorBankFolderPath = Path.Combine(Globals.ProjectFolder, settings.EditorStorageRelativeFolderPath, "Build", "Desktop");
 
             var banks = Directory.GetFiles(editorBankFolderPath, "*.bank", SearchOption.AllDirectories);
             
@@ -297,7 +297,7 @@ public class FmodEditorSystem : EditorPlugin
             // TODO: create individual files for each event.
             var fileInfo = File.ReadAllText(newGuidLocation);
             var events = JsonSerializer.Deserialize<List<FmodEditorEvent>>(fileInfo);
-            var eventFolder = Path.Combine(Globals.ProjectFolder, settings.EditorBankRelativeFolderPath, "Events");
+            var eventFolder = Path.Combine(Globals.ProjectFolder, settings.EditorStorageRelativeFolderPath, "Events");
             if (!Directory.Exists(eventFolder))
                 Directory.CreateDirectory(eventFolder);
             

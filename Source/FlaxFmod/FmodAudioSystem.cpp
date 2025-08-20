@@ -157,7 +157,8 @@ void FmodAudioSystem::Initialize()
 
     // Always load master banks
 #if USE_EDITOR
-    auto relativeBankPath = settings->EditorBankRelativeFolderPath;
+    // Todo: make this work for other platforms once supported.
+    auto relativeBankPath = settings->EditorStorageRelativeFolderPath + TEXT("/") + TEXT("Build") + TEXT("/") + TEXT("Desktop");
 #else
     auto relativeBankPath = settings->BuiltProjectBankRelativeFolderPath;
 #endif
@@ -166,7 +167,6 @@ void FmodAudioSystem::Initialize()
     StringView masterBankFileName = masterBankName + TEXT(".bank");
     StringView masterBankStringsFileName = masterBankName + TEXT(".strings.bank");
 
-    // TODO: make this work in built game.
     auto bankFolder = Globals::ProjectFolder + TEXT("/") + relativeBankPath;
     FileSystem::NormalizePath(bankFolder);
     Array<String> bankFiles;
@@ -297,7 +297,8 @@ void FmodAudioSystem::LoadBank(const String& bankName)
     auto* settings = FmodAudioSettings::Get();
 
 #if USE_EDITOR
-    auto relativeBankPath = settings->EditorBankRelativeFolderPath;
+    // Todo: make this work for other platforms once supported.
+    auto relativeBankPath = settings->EditorStorageRelativeFolderPath + TEXT("/") + TEXT("Build") + TEXT("/") + TEXT("Desktop");
 #else
     auto relativeBankPath = settings->BuiltProjectBankRelativeFolderPath;
 #endif

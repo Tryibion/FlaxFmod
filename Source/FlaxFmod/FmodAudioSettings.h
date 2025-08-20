@@ -29,32 +29,32 @@ public:
     API_FIELD() Array<String> BanksToPreload;
 
     /// <summary>
-    /// The FMOD folder used for storing banks in the editor and generating assets.
-    /// This is relative to the project folder.
-    /// </summary>
-    API_FIELD() String EditorBankRelativeFolderPath = TEXT("Content/FMOD");
-
-    /// <summary>
     /// The FMOD folder used for storing banks in a built game and generating assets.
     /// This is relative to the startup folder.
     /// </summary>
     API_FIELD() String BuiltProjectBankRelativeFolderPath = TEXT("Content/fmod");
 
     /// <summary>
+    /// The FMOD folder used for storing banks in the editor and generating assets.
+    /// This is relative to the project folder.
+    /// </summary>
+    API_FIELD(Attributes="EditorDisplay(\"Editor\")") String EditorStorageRelativeFolderPath = TEXT("Content/FMOD");
+
+    /// <summary>
     /// The folder or file where the .fspro project is located.
     /// This is relative to the project folder.
     /// </summary>
-    API_FIELD() String FmodStudioRelativeProjectPath = TEXT("FMOD"); // Todo: make this a file path editor
+    API_FIELD(Attributes="EditorDisplay(\"Editor\")") String FmodStudioRelativeProjectPath = TEXT("FMOD"); // Todo: make this a file path editor
 
     /// <summary>
     /// Editor Only. The environment variable where Fmod studio location is stored. Absolute path will be used if this does not exist.
     /// </summary>
-    API_FIELD() String FmodStudioLocationEnvironmentVariable = TEXT("FMOD_STUDIO");
+    API_FIELD(Attributes="EditorDisplay(\"Editor\")") String FmodStudioLocationEnvironmentVariable = TEXT("FMOD_STUDIO");
 
     /// <summary>
     /// Editor Only. The absolute install location of fmod studio. Used if the environment variable is not found.
     /// </summary>
-    API_FIELD() String FmodStudioInstallLocation = TEXT("C:\\Program Files/FMOD SoundSystem/FMOD Studio 2.03.08"); // Todo: make this a file path editor
+    API_FIELD(Attributes="EditorDisplay(\"Editor\")") String FmodStudioInstallLocation = TEXT("C:\\Program Files/FMOD SoundSystem/FMOD Studio 2.03.08"); // Todo: make this a file path editor
 
     // Init settings
 
