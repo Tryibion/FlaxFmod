@@ -78,6 +78,11 @@ public:
     API_FUNCTION() static void SetMasterVolume(float volume);
 
     /// <summary>
+    /// Gets the master audio channel volume.
+    /// </summary>
+    API_FUNCTION() static float GetMasterVolume();
+
+    /// <summary>
     /// Sets a global FMOD parameter based on name.
     /// </summary>
     API_FUNCTION() static void SetGlobalParameter(const String& name, float value);
@@ -86,4 +91,14 @@ public:
     /// Gets a global FMOD parameter based on name.
     /// </summary>
     API_FUNCTION() static float GetGlobalParameter(const String& name);
+
+    /// <summary>
+    /// Loads a bank based on the bank name. This will resolve the path.
+    /// </summary>
+    API_FUNCTION() static void LoadBank(const String& bankName);
+
+    /// <summary>
+    /// Unloads a bank based on the bank name. This will resolve the path.
+    /// </summary>
+    API_FUNCTION() static void UnloadBank(const String& bankName);
 };

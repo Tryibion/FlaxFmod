@@ -291,6 +291,50 @@ void FmodAudioSystem::LoadBank(const StringView& bankPath, int loadFlags)
     FMODLOG(Info, "Bank {} loaded.", bankPath);
 }
 
+void FmodAudioSystem::LoadBank(const String& bankName)
+{
+    // Search for bank file in paths.
+    auto* settings = FmodAudioSettings::Get();
+
+#if USE_EDITOR
+    auto relativeBankPath = settings->EditorBankRelativeFolderPath;
+#else
+    auto relativeBankPath = settings->BuiltProjectBankRelativeFolderPath;
+#endif
+
+    String bankFileName;
+    if (!bankName.EndsWith(TEXT(".bank")))
+        bankFileName = bankName + TEXT(".bank");
+    else
+        bankFileName = bankName;
+    
+    auto bankFolder = Globals::ProjectFolder + TEXT("/") + relativeBankPath;
+    FileSystem::NormalizePath(bankFolder);
+    Array<String> bankFiles;
+    FileSystem::DirectoryGetFiles(bankFiles, bankFolder, bankFileName.Get());
+
+    if (bankFiles.Count() == 0)
+    {
+        FMODLOG(Warning, "Can not load bank. Bank {} not found.", bankName);
+        return;
+    }
+
+    auto bankPath = bankFiles[0];
+    
+    if (IsBankLoaded(bankPath))
+        return;
+
+    FMOD::Studio::Bank* bank = nullptr;
+    auto result = _studioSystem->loadBankFile(bankPath.ToStringAnsi().GetText(), FMOD_STUDIO_LOAD_BANK_NORMAL, &bank);
+    if (result != FMOD_OK)
+    {
+        FMODLOG(Warning, "Failed to load bank at {}, Error: {}", bankPath, String(FMOD_ErrorString(result)));
+        return;
+    }
+    _loadedBanks.Add(bankPath, bank);
+    FMODLOG(Info, "Bank {} loaded.", bankPath);
+}
+
 void FmodAudioSystem::UnloadBank(const StringView& bankPath)
 {
     FMOD::Studio::Bank* bank = nullptr;
@@ -299,6 +343,26 @@ void FmodAudioSystem::UnloadBank(const StringView& bankPath)
         bank->unload();
         _loadedBanks.Remove(bankPath);
         FMODLOG(Info, "Bank {} unloaded.", bankPath);
+    }
+}
+
+void FmodAudioSystem::UnloadBank(const String& bankName)
+{
+    String bankFileName;
+    if (!bankName.EndsWith(TEXT(".bank")))
+        bankFileName = bankName + TEXT(".bank");
+    else
+        bankFileName = bankName;
+    
+    for (auto& bank : _loadedBanks)
+    {
+        if (bank.Key.EndsWith(bankFileName))
+        {
+            bank.Value->unload();
+            FMODLOG(Info, "Bank {} unloaded.", bank.Key);
+            _loadedBanks.Remove(bank);
+            break;
+        }
     }
 }
 

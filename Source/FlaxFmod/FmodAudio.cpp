@@ -1,5 +1,6 @@
 ﻿#include "FmodAudio.h"
 
+#include "FmodAudioSettings.h"
 #include "FmodAudioSystem.h"
 #include "Engine/Scripting/Plugins/PluginManager.h"
 #include "Actors/FmodAudioListener.h"
@@ -37,10 +38,12 @@ FmodAudioSystem* FmodAudio::GetAudioSystem()
 
 void FmodAudio::SetActiveAudioDevice(int index)
 {
+    if (!_audioSystem)
+        return;
     // Ignore first call to only set index.
     if (_activeAudioDeviceIndex != -1)
     {
-        GetAudioSystem()->SetDriver(index);
+        _audioSystem->SetDriver(index);
         ActiveAudioDeviceChanged();
     }
     _activeAudioDeviceIndex = index;
@@ -55,19 +58,40 @@ void FmodAudio::SetMasterVolume(float volume)
 {
     if (!_audioSystem)
         return;
-    GetAudioSystem()->SetMasterVolume(volume);
+    _audioSystem->SetMasterVolume(volume);
+}
+
+float FmodAudio::GetMasterVolume()
+{
+    if (!_audioSystem)
+        return -1.0f;
+    return _audioSystem->GetMasterVolume();
 }
 
 void FmodAudio::SetGlobalParameter(const String& name, float value)
 {
     if (!_audioSystem)
         return;
-    GetAudioSystem()->SetGlobalParameter(name, value);
+    _audioSystem->SetGlobalParameter(name, value);
 }
 
 float FmodAudio::GetGlobalParameter(const String& name)
 {
     if (!_audioSystem)
         return -1.0f;
-    return GetAudioSystem()->GetGlobalParameter(name);
+    return _audioSystem->GetGlobalParameter(name);
+}
+
+void FmodAudio::LoadBank(const String& bankName)
+{
+    if (!_audioSystem)
+        return;
+   _audioSystem->LoadBank(bankName);
+}
+
+void FmodAudio::UnloadBank(const String& bankName)
+{
+    if (!_audioSystem)
+        return;
+    _audioSystem->UnloadBank(bankName);
 }
