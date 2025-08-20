@@ -7,3 +7,5 @@ Licensing and terms of agreement need to follow the FMOD license and terms of ag
 FMOD Library used is version 2.03.08
 
 Only windows has been tested.
+
+To add this plugin project to your game, follow the instructions in the [Flax Engine documentation](https://docs.flaxengine.com/manual/scripting/plugins/plugin-project.html#automated-git-cloning) for adding a plugin project automatically using git or manually.
