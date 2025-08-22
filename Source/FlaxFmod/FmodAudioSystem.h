@@ -64,4 +64,10 @@ public:
     void UpdateDrivers();
     void SetGlobalParameter(const StringView& parameterName, float value);
     float GetGlobalParameter(const StringView& parameterName);
+
+    // Bus
+    void SetBusMute(const String& busPath, bool mute);
+    bool GetBusMute(const String& busPath);
+    void SetBusVolumeMultiplier(const String& busPath, float volumeScale);
+    float GetBusVolumeMultiplier(const String& busPath);
 };

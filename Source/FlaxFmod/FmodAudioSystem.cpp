@@ -720,3 +720,55 @@ float FmodAudioSystem::GetGlobalParameter(const StringView& parameterName)
         FMODLOG(Warning, "Failed to get global parameter {}. Error: {}", parameterName.ToString(), String(FMOD_ErrorString(result)));
     return value;
 }
+
+void FmodAudioSystem::SetBusMute(const String& busPath, bool mute)
+{
+    FMOD::Studio::Bus* bus = nullptr;
+    auto result = _studioSystem->getBus(busPath.ToStringAnsi().GetText(), &bus);
+    if (result != FMOD_OK)
+    {
+        FMODLOG(Warning, "Failed to get bus at {}, Error: {}", busPath, String(FMOD_ErrorString(result)));
+        return;
+    }
+    bus->setMute(mute);
+}
+
+bool FmodAudioSystem::GetBusMute(const String& busPath)
+{
+    FMOD::Studio::Bus* bus = nullptr;
+    auto result = _studioSystem->getBus(busPath.ToStringAnsi().GetText(), &bus);
+    if (result != FMOD_OK)
+    {
+        FMODLOG(Warning, "Failed to get bus at {}, Error: {}", busPath, String(FMOD_ErrorString(result)));
+        return false;
+    }
+    bool mute;
+    bus->getMute(&mute);
+    return mute;
+}
+
+void FmodAudioSystem::SetBusVolumeMultiplier(const String& busPath, float volumeScale)
+{
+    FMOD::Studio::Bus* bus = nullptr;
+    auto result = _studioSystem->getBus(busPath.ToStringAnsi().GetText(), &bus);
+    if (result != FMOD_OK)
+    {
+        FMODLOG(Warning, "Failed to get bus at {}, Error: {}", busPath, String(FMOD_ErrorString(result)));
+        return;
+    }
+    bus->setVolume(volumeScale);
+}
+
+float FmodAudioSystem::GetBusVolumeMultiplier(const String& busPath)
+{
+    FMOD::Studio::Bus* bus = nullptr;
+    auto result = _studioSystem->getBus(busPath.ToStringAnsi().GetText(), &bus);
+    if (result != FMOD_OK)
+    {
+        FMODLOG(Warning, "Failed to get bus at {}, Error: {}", busPath, String(FMOD_ErrorString(result)));
+        return -1.0f;
+    }
+    float volume;
+    bus->getVolume(&volume);
+    return volume;
+}

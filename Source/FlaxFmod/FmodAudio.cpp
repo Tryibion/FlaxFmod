@@ -102,3 +102,71 @@ void FmodAudio::UnloadBank(const String& bankName)
         return;
     _audioSystem->UnloadBank(bankName);
 }
+
+void FmodAudio::SetBusVolume(JsonAssetReference<FmodBus> busAsset, float volumeMultiplier)
+{
+    if (!_audioSystem)
+        return;
+    auto* bus = busAsset->GetInstance<FmodBus>();
+    if (!bus)
+        return;
+    _audioSystem->SetBusVolumeMultiplier(bus->Path, volumeMultiplier);
+}
+
+void FmodAudio::SetBusVolume(const String& busPath, float volumeMultiplier)
+{
+    if (!_audioSystem)
+        return;
+    _audioSystem->SetBusVolumeMultiplier(busPath, volumeMultiplier);
+}
+
+float FmodAudio::GetBusVolume(JsonAssetReference<FmodBus> busAsset)
+{
+    if (!_audioSystem)
+        return -1.0f;
+    auto* bus = busAsset->GetInstance<FmodBus>();
+    if (!bus)
+        return -1.0f;
+    return _audioSystem->GetBusVolumeMultiplier(bus->Path);
+}
+
+float FmodAudio::GetBusVolume(const String& busPath)
+{
+    if (!_audioSystem)
+        return -1.0f;
+    return _audioSystem->GetBusVolumeMultiplier(busPath);
+}
+
+bool FmodAudio::GetBusMute(JsonAssetReference<FmodBus> busAsset)
+{
+    if (!_audioSystem)
+        return false;
+    auto* bus = busAsset->GetInstance<FmodBus>();
+    if (!bus)
+        return false;
+    return _audioSystem->GetBusMute(bus->Path);
+}
+
+bool FmodAudio::GetBusMute(const String& busPath)
+{
+    if (!_audioSystem)
+        return false;
+    return _audioSystem->GetBusMute(busPath);
+}
+
+void FmodAudio::SetBusMute(JsonAssetReference<FmodBus> busAsset, bool value)
+{
+    if (!_audioSystem)
+        return;
+    auto* bus = busAsset->GetInstance<FmodBus>();
+    if (!bus)
+        return;
+    _audioSystem->SetBusMute(bus->Path, value);
+}
+
+void FmodAudio::SetBusMute(const String& busPath, bool value)
+{
+    if (!_audioSystem)
+        return;
+    _audioSystem->SetBusMute(busPath, value);
+}

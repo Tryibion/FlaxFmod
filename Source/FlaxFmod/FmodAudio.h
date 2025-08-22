@@ -1,9 +1,11 @@
 ﻿#pragma once
 
 #include "fmod_studio_common.h"
+#include "Assets/FmodBus.h"
 #include "Engine/Core/Collections/Array.h"
 #include "Engine/Core/Log.h"
 #include "Engine/Audio/AudioDevice.h"
+#include "Engine/Content/JsonAssetReference.h"
 
 #define FMODLOG(messageType, format, ...) Log::Logger::Write(LogType::messageType, ::String::Format(String("[Fmod] ").Append(String(format)).GetText(), ##__VA_ARGS__))
 
@@ -107,4 +109,44 @@ public:
     /// Unloads a bank based on the bank name. This will resolve the path.
     /// </summary>
     API_FUNCTION() static void UnloadBank(const String& bankName);
+
+    /// <summary>
+    /// Sets a Bus volume multiplier.
+    /// </summary>
+    API_FUNCTION() static void SetBusVolume(JsonAssetReference<FmodBus> busAsset, float volumeMultiplier);
+
+    /// <summary>
+    /// Sets a Bus volume multiplier.
+    /// </summary>
+    API_FUNCTION() static void SetBusVolume(const String& busPath, float volumeMultiplier);
+
+    /// <summary>
+    /// Gets the Bus volume multiplier.
+    /// </summary>
+    API_FUNCTION() static float GetBusVolume(JsonAssetReference<FmodBus> busAsset);
+
+    /// <summary>
+    /// Gets the Bus volume multiplier.
+    /// </summary>
+    API_FUNCTION() static float GetBusVolume(const String& busPath);
+
+    /// <summary>
+    /// Gets whether the Bus is muted.
+    /// </summary>
+    API_FUNCTION() static bool GetBusMute(JsonAssetReference<FmodBus> busAsset);
+
+    /// <summary>
+    /// Gets whether the Bus is muted.
+    /// </summary>
+    API_FUNCTION() static bool GetBusMute(const String& busPath);
+
+    /// <summary>
+    /// Sets whether the Bus is muted.
+    /// </summary>
+    API_FUNCTION() static void SetBusMute(JsonAssetReference<FmodBus> busAsset, bool value);
+
+    /// <summary>
+    /// Sets whether the Bus is muted.
+    /// </summary>
+    API_FUNCTION() static void SetBusMute(const String& busPath, bool value);
 };
