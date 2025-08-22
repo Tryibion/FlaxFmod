@@ -24,7 +24,6 @@ public class FlaxFmod : GameModule
         options.CompileEnv.IncludePaths.Add(coreIncludePath);
         var studioIncludePath = Path.Combine(FolderPath, "..", "Fmod", "Include", "studio");
         options.CompileEnv.IncludePaths.Add(studioIncludePath);
-        
 
         switch (options.Platform.Target)
         {
@@ -61,9 +60,6 @@ public class FlaxFmod : GameModule
             default:
                 break;
         }
-       
-        
-        
     }
     
     /// <inheritdoc />
