@@ -46,10 +46,10 @@ void FmodAudioSystem::Update()
             Vector3 listenerVelocity = activeListener->GetVelocity();
             Vector3 listenerForward = activeListener->GetDirection();
             Vector3 listenerUp = activeListener->GetTransform().GetUp();
-            listenerAttributes.position = {listenerPosition.X, listenerPosition.Y, listenerPosition.Z};
-            listenerAttributes.velocity = {listenerVelocity.X, listenerVelocity.Y, listenerVelocity.Z};
-            listenerAttributes.forward = {listenerForward.X, listenerForward.Y, listenerForward.Z};
-            listenerAttributes.up = {listenerUp.X, listenerUp.Y, listenerUp.Z};
+            listenerAttributes.position = { static_cast<float>(listenerPosition.X), static_cast<float>(listenerPosition.Y), static_cast<float>(listenerPosition.Z) };
+            listenerAttributes.velocity = { static_cast<float>(listenerVelocity.X), static_cast<float>(listenerVelocity.Y), static_cast<float>(listenerVelocity.Z) };
+            listenerAttributes.forward = { static_cast<float>(listenerForward.X), static_cast<float>(listenerForward.Y), static_cast<float>(listenerForward.Z) };
+            listenerAttributes.up = { static_cast<float>(listenerUp.X), static_cast<float>(listenerUp.Y), static_cast<float>(listenerUp.Z) };
 
             _studioSystem->setListenerAttributes(0, &listenerAttributes);
         }
@@ -75,10 +75,10 @@ void FmodAudioSystem::Update()
             Vector3 sourceVelocity = source->GetVelocity();
             Vector3 sourceForward = source->GetDirection();
             Vector3 sourceUp = source->GetTransform().GetUp();
-            sourceAttributes.position = {sourcePosition.X, sourcePosition.Y, sourcePosition.Z};
-            sourceAttributes.velocity = {sourceVelocity.X, sourceVelocity.Y, sourceVelocity.Z};
-            sourceAttributes.forward = {sourceForward.X, sourceForward.Y, sourceForward.Z};
-            sourceAttributes.up = {sourceUp.X, sourceUp.Y, sourceUp.Z};
+            sourceAttributes.position = { static_cast<float>(sourcePosition.X), static_cast<float>(sourcePosition.Y), static_cast<float>(sourcePosition.Z) };
+            sourceAttributes.velocity = { static_cast<float>(sourceVelocity.X), static_cast<float>(sourceVelocity.Y), static_cast<float>(sourceVelocity.Z) };
+            sourceAttributes.forward = { static_cast<float>(sourceForward.X), static_cast<float>(sourceForward.Y), static_cast<float>(sourceForward.Z) };
+            sourceAttributes.up = { static_cast<float>(sourceUp.X), static_cast<float>(sourceUp.Y), static_cast<float>(sourceUp.Z) };
             instance->set3DAttributes(&sourceAttributes);
         }
 
@@ -144,14 +144,14 @@ void FmodAudioSystem::Initialize()
     _coreSystem->setUserData(this); // To use in events
     _coreSystem->setCallback(&OnSystemEvent, FMOD_SYSTEM_CALLBACK_DEVICELISTCHANGED | FMOD_SYSTEM_CALLBACK_DEVICELOST);
 
-    UpdateDrivers();
-    FmodAudio::SetActiveAudioDevice(GetDriver());
-    auto x = FmodAudio::AudioDevices[FmodAudio::GetActiveAudioDevice()];
-    FMODLOG(Info, "Active audio device: {}.", x.Name);
-
     FmodAudio::Initialize();
 
     FMODLOG(Info, "Fmod studio system created and initialized.");
+
+    UpdateDrivers();
+    FmodAudio::SetActiveAudioDevice(GetDriver());
+    auto activeAudioDevice = FmodAudio::AudioDevices[FmodAudio::GetActiveAudioDevice()];
+    FMODLOG(Info, "Active audio device: {}.", activeAudioDevice.Name);
 
     Scripting::Update.Bind<FmodAudioSystem, &FmodAudioSystem::Update>(this);
 
@@ -214,7 +214,6 @@ void FmodAudioSystem::Initialize()
                 }
             }
         }
-        
     }
 }
 
