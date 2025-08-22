@@ -33,6 +33,18 @@ public class FmodEditorSystem : EditorPlugin
         }
     }
     
+    private struct FmodEditorBus
+    {
+        public string Path;
+        public string Guid;
+        
+        public FmodEditorBus()
+        {
+            Path = string.Empty;
+            Guid = string.Empty;
+        }
+    }
+    
     private string _settingsPath;
     private JsonAsset _jsonAsset;
     
@@ -68,10 +80,15 @@ public class FmodEditorSystem : EditorPlugin
         ViewportIconsRenderer.AddCustomIcon(typeof(FmodAudioSource), Content.LoadAsync<Texture>(System.IO.Path.Combine(Globals.EngineContentFolder, "Editor/Icons/Textures/AudioSource.flax")));
         SceneGraphFactory.CustomNodesTypes.Add(typeof(FmodAudioSource), typeof(FmodAudioSourceNode));
 
-        var logo = Content.Load<SpriteAtlas>("Plugins/FlaxFmod/Content/Editor/Icons/FMOD Event Image.flax");
-        logo.WaitForLoaded();
-        var logoSprite = logo.FindSprite("Default");
-        Editor.ContentDatabase.AddProxy(new SpawnableJsonAssetProxy<FmodEvent>(logoSprite));
+        var eventLogo = Content.Load<SpriteAtlas>("Plugins/FlaxFmod/Content/Editor/Icons/FMOD Event Image.flax");
+        eventLogo.WaitForLoaded();
+        var eventLogoSprite = eventLogo.FindSprite("Default");
+        Editor.ContentDatabase.AddProxy(new SpawnableJsonAssetProxy<FmodEvent>(eventLogoSprite));
+        
+        var busLogo = Content.Load<SpriteAtlas>("Plugins/FlaxFmod/Content/Editor/Icons/FMOD Bus Image.flax");
+        busLogo.WaitForLoaded();
+        var busLogoSprite = busLogo.FindSprite("Default");
+        Editor.ContentDatabase.AddProxy(new SpawnableJsonAssetProxy<FmodBus>(busLogoSprite));
         
         // Menu Options
         var pluginsButton = Editor.UI.MainMenu.GetOrAddButton("Plugins");
@@ -286,7 +303,100 @@ public class FmodEditorSystem : EditorPlugin
         process?.WaitForExit();
         FlaxEditor.Editor.Log("FMOD studio script completed.");
 
-        // Copy file
+        // Create assets
+        CreateEventAssets(settings, studioProjectPath);;
+        CreateBusAssets(settings, studioProjectPath);
+    }
+
+    private void CreateBusAssets(FmodAudioSettings settings, string studioProjectPath)
+    {
+        var studioProjectDirectory = Path.GetDirectoryName(studioProjectPath);
+        var busFilePath = Path.Combine(studioProjectDirectory, "fmod_bus_export.json");
+        if (File.Exists(busFilePath))
+        {
+            var newGuidLocation = Path.Combine(Globals.ProjectSourceFolder, "FMOD", "fmod_bus_export.json");
+            Directory.CreateDirectory(Path.GetDirectoryName(newGuidLocation));
+            File.Copy(busFilePath, newGuidLocation, true);
+
+            // Create individual files for each event.
+            var fileInfo = File.ReadAllText(newGuidLocation);
+            var events = JsonSerializer.Deserialize<List<FmodEditorEvent>>(fileInfo);
+            var busFolder = Path.Combine(Globals.ProjectFolder, settings.EditorStorageRelativeFolderPath, "Buses");
+            if (!Directory.Exists(busFolder))
+                Directory.CreateDirectory(busFolder);
+            
+            // Get existing assets.
+            Dictionary<string, JsonAsset> existingAssets = new Dictionary<string, JsonAsset>(); // FMOD Guid, Asset
+            List<JsonAsset> jsonAssetRemovalList = new List<JsonAsset>();
+            var assetIds = Content.GetAllAssetsByType(typeof(FmodBus));
+            foreach (var assetId in assetIds)
+            {
+                var asset = Content.Load<JsonAsset>(assetId);
+                if (asset != null)
+                {
+                    var eventInstance = asset.GetInstance<FmodBus>();
+                    //Debug.Log($"asset Path: {asset.Path} Event: {eventInstance.Path}, Guid: {eventInstance.Guid}");
+                    existingAssets.Add(eventInstance.Guid, asset);
+                    jsonAssetRemovalList.Add(asset);
+                }
+            }
+
+            // Rebuild assets
+            foreach (var evt in events)
+            {
+                var relativeEventPath = evt.Path.Replace("bus:/", "");
+                if (string.IsNullOrEmpty(relativeEventPath))
+                    relativeEventPath = "Master";
+                relativeEventPath += ".json";
+                var savePath = StringUtils.NormalizePath(Path.Combine(busFolder, relativeEventPath));
+                var saveFolder =  Path.GetDirectoryName(savePath);
+                
+                if (existingAssets.ContainsKey(evt.Guid))
+                {
+                    var asset = existingAssets[evt.Guid];
+ 
+                    // Don't remove asset because it exists.
+                    jsonAssetRemovalList.Remove(asset);
+                    
+                    // Check path to ensure the correct path. Move if not correct.
+                    if (!asset.Path.Equals(savePath, StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (!Directory.Exists(saveFolder))
+                            Directory.CreateDirectory(saveFolder);
+
+                        var busInstance = asset.GetInstance<FmodBus>();
+                        busInstance.Path = evt.Path;
+                        Content.RenameAsset(asset.Path, savePath);
+                    }
+                }
+                else
+                {
+                    // Create new asset.
+                    if (!Directory.Exists(saveFolder))
+                        Directory.CreateDirectory(saveFolder);
+
+                    FmodBus fmodBus = new FmodBus
+                    {
+                        Path = evt.Path,
+                        Guid = evt.Guid,
+                    };
+                    FlaxEditor.Editor.SaveJsonAsset(savePath, fmodBus);
+                }
+            }
+            
+            // Remove not reference json assets.
+            foreach (var asset in jsonAssetRemovalList)
+            {
+                Content.DeleteAsset(asset);
+            }
+            
+            // Remove empty directories.
+            RemoveEmptyDirectories(busFolder);
+        }
+    }
+
+    private void CreateEventAssets(FmodAudioSettings settings, string studioProjectPath)
+    {
         var studioProjectDirectory = Path.GetDirectoryName(studioProjectPath);
         var guidFilePath = Path.Combine(studioProjectDirectory, "fmod_events_export.json");
         if (File.Exists(guidFilePath))
@@ -294,7 +404,8 @@ public class FmodEditorSystem : EditorPlugin
             var newGuidLocation = Path.Combine(Globals.ProjectSourceFolder, "FMOD", "fmod_events_export.json");
             Directory.CreateDirectory(Path.GetDirectoryName(newGuidLocation));
             File.Copy(guidFilePath, newGuidLocation, true);
-            // TODO: create individual files for each event.
+
+            // Create individual files for each event.
             var fileInfo = File.ReadAllText(newGuidLocation);
             var events = JsonSerializer.Deserialize<List<FmodEditorEvent>>(fileInfo);
             var eventFolder = Path.Combine(Globals.ProjectFolder, settings.EditorStorageRelativeFolderPath, "Events");
