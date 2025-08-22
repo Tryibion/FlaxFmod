@@ -170,3 +170,37 @@ void FmodAudio::SetBusMute(const String& busPath, bool value)
         return;
     _audioSystem->SetBusMute(busPath, value);
 }
+
+void FmodAudio::SetBusPaused(JsonAssetReference<FmodBus> busAsset, bool value)
+{
+    if (!_audioSystem)
+        return;
+    auto* bus = busAsset->GetInstance<FmodBus>();
+    if (!bus)
+        return;
+    _audioSystem->SetBusPaused(bus->Path, value);
+}
+
+void FmodAudio::SetBusPaused(const String& busPath, bool value)
+{
+    if (!_audioSystem)
+        return;
+    _audioSystem->SetBusPaused(busPath, value);
+}
+
+bool FmodAudio::IsBusPaused(JsonAssetReference<FmodBus> busAsset)
+{
+    if (!_audioSystem)
+        return false;
+    auto* bus = busAsset->GetInstance<FmodBus>();
+    if (!bus)
+        return false;
+    return _audioSystem->IsBusPaused(bus->Path);
+}
+
+bool FmodAudio::IsBusPaused(const String& busPath)
+{
+    if (!_audioSystem)
+        return false;
+    return _audioSystem->IsBusPaused(busPath);
+}

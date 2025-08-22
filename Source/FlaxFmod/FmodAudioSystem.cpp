@@ -772,3 +772,29 @@ float FmodAudioSystem::GetBusVolumeMultiplier(const String& busPath)
     bus->getVolume(&volume);
     return volume;
 }
+
+void FmodAudioSystem::SetBusPaused(const String& busPath, bool paused)
+{
+    FMOD::Studio::Bus* bus = nullptr;
+    auto result = _studioSystem->getBus(busPath.ToStringAnsi().GetText(), &bus);
+    if (result != FMOD_OK)
+    {
+        FMODLOG(Warning, "Failed to get bus at {}, Error: {}", busPath, String(FMOD_ErrorString(result)));
+        return;
+    }
+    bus->setPaused(paused);
+}
+
+bool FmodAudioSystem::IsBusPaused(const String& busPath)
+{
+    FMOD::Studio::Bus* bus = nullptr;
+    auto result = _studioSystem->getBus(busPath.ToStringAnsi().GetText(), &bus);
+    if (result != FMOD_OK)
+    {
+        FMODLOG(Warning, "Failed to get bus at {}, Error: {}", busPath, String(FMOD_ErrorString(result)));
+        return false;
+    }
+    bool paused;
+    bus->getPaused(&paused);
+    return paused;
+}

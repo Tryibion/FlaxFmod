@@ -70,4 +70,6 @@ public:
     bool GetBusMute(const String& busPath);
     void SetBusVolumeMultiplier(const String& busPath, float volumeScale);
     float GetBusVolumeMultiplier(const String& busPath);
+    void SetBusPaused(const String& busPath, bool paused);
+    bool IsBusPaused(const String& busPath);
 };

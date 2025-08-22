@@ -149,4 +149,24 @@ public:
     /// Sets whether the Bus is muted.
     /// </summary>
     API_FUNCTION() static void SetBusMute(const String& busPath, bool value);
+
+    /// <summary>
+    /// Sets whether the bus is paused.
+    /// </summary>
+    API_FUNCTION() static void SetBusPaused(JsonAssetReference<FmodBus> busAsset, bool value);
+
+    /// <summary>
+    /// Sets whether the bus is paused.
+    /// </summary>
+    API_FUNCTION() static void SetBusPaused(const String& busPath, bool value);
+
+    /// <summary>
+    /// Gets whether the bus is paused.
+    /// </summary>
+    API_FUNCTION() static bool IsBusPaused(JsonAssetReference<FmodBus> busAsset);
+
+    /// <summary>
+    /// Gets whether the bus is paused.
+    /// </summary>
+    API_FUNCTION() static bool IsBusPaused(const String& busPath);
 };
