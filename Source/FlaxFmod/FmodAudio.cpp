@@ -89,6 +89,13 @@ void FmodAudio::LoadBank(const String& bankName)
    _audioSystem->LoadBank(bankName);
 }
 
+bool FmodAudio::IsBankLoaded(const String& bankName)
+{
+    if (!_audioSystem)
+        return false;
+    return _audioSystem->CheckBankLoaded(bankName);
+}
+
 void FmodAudio::UnloadBank(const String& bankName)
 {
     if (!_audioSystem)

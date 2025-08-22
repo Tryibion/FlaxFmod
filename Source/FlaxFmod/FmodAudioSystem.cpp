@@ -392,6 +392,25 @@ bool FmodAudioSystem::IsBankLoaded(const StringView& bankPath)
     return false;
 }
 
+bool FmodAudioSystem::CheckBankLoaded(const String& bankName)
+{
+    String bankFileName;
+    if (!bankName.EndsWith(TEXT(".bank")))
+        bankFileName = bankName + TEXT(".bank");
+    else
+        bankFileName = bankName;
+    
+    for (auto& bank : _loadedBanks)
+    {
+        if (bank.Key.EndsWith(bankFileName))
+        {
+            return IsBankLoaded(bank.Key);
+        }
+    }
+
+    return false;
+}
+
 void* FmodAudioSystem::CreateEventInstance(const StringView& eventPath)
 {
     FMOD::Studio::EventDescription* eventDescription = nullptr;

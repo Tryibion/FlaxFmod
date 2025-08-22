@@ -34,6 +34,7 @@ public:
     void UnloadBank(const String& bankName);
     void UnloadAllBanks();
     bool IsBankLoaded(const StringView& bankPath);
+    bool CheckBankLoaded(const String& bankName);
 
     // Event
     void* CreateEventInstance(const StringView& eventPath);

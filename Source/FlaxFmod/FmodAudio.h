@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "fmod_studio_common.h"
 #include "Engine/Core/Collections/Array.h"
 #include "Engine/Core/Log.h"
 #include "Engine/Audio/AudioDevice.h"
@@ -96,6 +97,11 @@ public:
     /// Loads a bank based on the bank name. This will resolve the path.
     /// </summary>
     API_FUNCTION() static void LoadBank(const String& bankName);
+
+    /// <summary>
+    /// Returns true if the bank is loaded based on the bank name. This will resolve the path.
+    /// </summary>
+    API_FUNCTION() static bool IsBankLoaded(const String& bankName);
 
     /// <summary>
     /// Unloads a bank based on the bank name. This will resolve the path.
