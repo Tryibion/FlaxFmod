@@ -304,7 +304,7 @@ public class FmodEditorSystem : EditorPlugin
         FlaxEditor.Editor.Log("FMOD studio script completed.");
 
         // Create assets
-        CreateEventAssets(settings, studioProjectPath);;
+        CreateEventAssets(settings, studioProjectPath);
         CreateBusAssets(settings, studioProjectPath);
     }
 
@@ -320,7 +320,7 @@ public class FmodEditorSystem : EditorPlugin
 
             // Create individual files for each event.
             var fileInfo = File.ReadAllText(newGuidLocation);
-            var events = JsonSerializer.Deserialize<List<FmodEditorEvent>>(fileInfo);
+            var buses = JsonSerializer.Deserialize<List<FmodEditorEvent>>(fileInfo);
             var busFolder = Path.Combine(Globals.ProjectFolder, settings.EditorStorageRelativeFolderPath, "Buses");
             if (!Directory.Exists(busFolder))
                 Directory.CreateDirectory(busFolder);
@@ -335,25 +335,25 @@ public class FmodEditorSystem : EditorPlugin
                 if (asset != null)
                 {
                     var eventInstance = asset.GetInstance<FmodBus>();
-                    //Debug.Log($"asset Path: {asset.Path} Event: {eventInstance.Path}, Guid: {eventInstance.Guid}");
+                    //Debug.Log($"asset Path: {asset.Path} Bus: {eventInstance.Path}, Guid: {eventInstance.Guid}");
                     existingAssets.Add(eventInstance.Guid, asset);
                     jsonAssetRemovalList.Add(asset);
                 }
             }
 
             // Rebuild assets
-            foreach (var evt in events)
+            foreach (var bus in buses)
             {
-                var relativeEventPath = evt.Path.Replace("bus:/", "");
+                var relativeEventPath = bus.Path.Replace("bus:/", "");
                 if (string.IsNullOrEmpty(relativeEventPath))
                     relativeEventPath = "Master";
                 relativeEventPath += ".json";
                 var savePath = StringUtils.NormalizePath(Path.Combine(busFolder, relativeEventPath));
                 var saveFolder =  Path.GetDirectoryName(savePath);
                 
-                if (existingAssets.ContainsKey(evt.Guid))
+                if (existingAssets.ContainsKey(bus.Guid))
                 {
-                    var asset = existingAssets[evt.Guid];
+                    var asset = existingAssets[bus.Guid];
  
                     // Don't remove asset because it exists.
                     jsonAssetRemovalList.Remove(asset);
@@ -365,7 +365,7 @@ public class FmodEditorSystem : EditorPlugin
                             Directory.CreateDirectory(saveFolder);
 
                         var busInstance = asset.GetInstance<FmodBus>();
-                        busInstance.Path = evt.Path;
+                        busInstance.Path = bus.Path;
                         Content.RenameAsset(asset.Path, savePath);
                     }
                 }
@@ -377,8 +377,8 @@ public class FmodEditorSystem : EditorPlugin
 
                     FmodBus fmodBus = new FmodBus
                     {
-                        Path = evt.Path,
-                        Guid = evt.Guid,
+                        Path = bus.Path,
+                        Guid = bus.Guid,
                     };
                     FlaxEditor.Editor.SaveJsonAsset(savePath, fmodBus);
                 }
@@ -398,12 +398,12 @@ public class FmodEditorSystem : EditorPlugin
     private void CreateEventAssets(FmodAudioSettings settings, string studioProjectPath)
     {
         var studioProjectDirectory = Path.GetDirectoryName(studioProjectPath);
-        var guidFilePath = Path.Combine(studioProjectDirectory, "fmod_events_export.json");
-        if (File.Exists(guidFilePath))
+        var eventsFilePath = Path.Combine(studioProjectDirectory, "fmod_events_export.json");
+        if (File.Exists(eventsFilePath))
         {
             var newGuidLocation = Path.Combine(Globals.ProjectSourceFolder, "FMOD", "fmod_events_export.json");
             Directory.CreateDirectory(Path.GetDirectoryName(newGuidLocation));
-            File.Copy(guidFilePath, newGuidLocation, true);
+            File.Copy(eventsFilePath, newGuidLocation, true);
 
             // Create individual files for each event.
             var fileInfo = File.ReadAllText(newGuidLocation);
