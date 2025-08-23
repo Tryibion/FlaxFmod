@@ -43,7 +43,7 @@ public:
     /// <summary>
     /// A list of the enabled fmod audio sources.
     /// </summary>
-    static Array<FmodAudioSource*> Sources;
+    API_FIELD(ReadOnly) static Array<FmodAudioSource*> Sources;
 
     /// <summary>
     /// Fired when an audio device is lost.
