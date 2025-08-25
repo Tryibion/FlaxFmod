@@ -195,12 +195,12 @@ public:
     /// <summary>
     /// Sets a event parameter based on its name.
     /// </summary>
-    API_FUNCTION() void SetParameter(String& parameterName, float value);
+    API_FUNCTION() void SetParameter(const String& parameterName, float value);
 
     /// <summary>
     /// Gets a event parameter based on its name.
     /// </summary>
-    API_FUNCTION() float GetParameter(String& parameterName);
+    API_FUNCTION() float GetParameter(const String& parameterName);
 
 private:
 
