@@ -12,6 +12,7 @@
 class FmodAudioDevice;
 class FmodAudioSource;
 class FmodAudioListener;
+class FmodAudioSystem;
 API_CLASS(Static) class FLAXFMOD_API FmodAudio
 {
     DECLARE_SCRIPTING_TYPE_NO_SPAWN(FmodAudio);
