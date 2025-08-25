@@ -145,7 +145,7 @@ bool FmodAudioSource::IsPlaying()
     return FmodAudio::GetAudioSystem()->IsEventPlaying(EventInstance);
 }
 
-void FmodAudioSource::SetParameter(String& parameterName, float value)
+void FmodAudioSource::SetParameter(const String& parameterName, float value)
 {
     if (!CheckForEvent())
         return;
@@ -154,7 +154,7 @@ void FmodAudioSource::SetParameter(String& parameterName, float value)
         FmodAudio::GetAudioSystem()->SetEventParameter(EventInstance, parameterName, value);
 }
 
-float FmodAudioSource::GetParameter(String& parameterName)
+float FmodAudioSource::GetParameter(const String& parameterName)
 {
     if (!CheckForEvent())
         return -1.0f;
