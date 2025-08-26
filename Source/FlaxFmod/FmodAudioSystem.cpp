@@ -11,21 +11,8 @@
 #include "Engine/Engine/Engine.h"
 #include "Engine/Engine/Globals.h"
 #include "Engine/Scripting/Scripting.h"
+#include "Engine/Platform/FileSystem.h"
 
-#if PLATFORM_WINDOWS
-#include "Engine/Platform/Windows/WindowsFileSystem.h"
-#elif PLATFORM_LINUX
-#include "Engine/Platform/Linux/LinuxFileSystem.h"
-#elif PLATFORM_MACOS
-#include "Engine/Platform/MacOS/MacOSFileSystem.h"
-#elif PLATFORM_ANDROID
-#include "Engine/Platform/Android/AndroidFileSystem.h"
-#elif PLATFORM_IOS
-#include "Engine/Platform/IOS/IOSFileSystem.h"
-#elif PLATFORM_SWITCH
-#include "Engine/Platform/Switch/SwitchFileSystem.h"
-#elif PLATFORM_PS4
-#endif
 
 FmodAudioSystem::FmodAudioSystem(const SpawnParams& params)
     : GamePlugin(params)
