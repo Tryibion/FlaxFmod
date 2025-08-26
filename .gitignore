@@ -44,7 +44,6 @@ Thumbs.db
 *.ilk
 *.log
 [Bb]in
-*.lib
 *.sbr
 /Source/obj/
 _ReSharper*/
