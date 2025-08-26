@@ -204,3 +204,37 @@ bool FmodAudio::IsBusPaused(const String& busPath)
         return false;
     return _audioSystem->IsBusPaused(busPath);
 }
+
+void FmodAudio::SetVCAVolume(JsonAssetReference<FmodVca> vcaAsset, float volumeScale)
+{
+    if (!_audioSystem)
+        return;
+    auto* vca = vcaAsset->GetInstance<FmodVca>();
+    if (!vca)
+        return;
+    _audioSystem->SetVCAVolumeMultiplier(vca->Path, volumeScale);
+}
+
+void FmodAudio::SetVCAVolume(const String& vcaPath, float volumeScale)
+{
+    if (!_audioSystem)
+        return;
+    _audioSystem->SetVCAVolumeMultiplier(vcaPath, volumeScale);
+}
+
+float FmodAudio::GetVCAVolume(JsonAssetReference<FmodVca> vcaAsset)
+{
+    if (!_audioSystem)
+        return -1.0f;
+    auto* vca = vcaAsset->GetInstance<FmodVca>();
+    if (!vca)
+        return -1.0f;
+    return _audioSystem->GetVCAVolumeMultiplier(vca->Path);
+}
+
+float FmodAudio::GetVCAVolume(const String& vcaPath)
+{
+    if (!_audioSystem)
+        return -1.0f;
+    return _audioSystem->GetVCAVolumeMultiplier(vcaPath);
+}

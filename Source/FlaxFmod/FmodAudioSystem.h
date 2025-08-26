@@ -71,4 +71,8 @@ public:
     float GetBusVolumeMultiplier(const String& busPath);
     void SetBusPaused(const String& busPath, bool paused);
     bool IsBusPaused(const String& busPath);
+
+    // VCA
+    void SetVCAVolumeMultiplier(const String& vcaPath, float volumeScale);
+    float GetVCAVolumeMultiplier(const String& vcaPath);
 };

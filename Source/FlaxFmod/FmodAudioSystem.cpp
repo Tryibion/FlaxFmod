@@ -227,8 +227,7 @@ void FmodAudioSystem::SetMasterVolume(float volumeMultiplier)
     auto result = _coreSystem->getMasterChannelGroup(&masterChannelGroup);
     if (result != FMOD_OK)
     {
-        FMODLOG(Warning, "Failed to get master channel group to set master volume, Error: {}",
-                String(FMOD_ErrorString(result)));
+        FMODLOG(Warning, "Failed to get master channel group to set master volume, Error: {}", String(FMOD_ErrorString(result)));
         return;
     }
     result = masterChannelGroup->setVolume(volumeMultiplier);
@@ -784,4 +783,30 @@ bool FmodAudioSystem::IsBusPaused(const String& busPath)
     bool paused;
     bus->getPaused(&paused);
     return paused;
+}
+
+void FmodAudioSystem::SetVCAVolumeMultiplier(const String& vcaPath, float volumeScale)
+{
+    FMOD::Studio::VCA* vca = nullptr;
+    auto result = _studioSystem->getVCA(vcaPath.ToStringAnsi().GetText(), &vca);
+    if (result != FMOD_OK)
+    {
+        FMODLOG(Warning, "Failed to get VCA at {}, Error: {}", vcaPath, String(FMOD_ErrorString(result)));
+        return;
+    }
+    vca->setVolume(volumeScale);
+}
+
+float FmodAudioSystem::GetVCAVolumeMultiplier(const String& vcaPath)
+{
+    FMOD::Studio::VCA* vca = nullptr;
+    auto result = _studioSystem->getVCA(vcaPath.ToStringAnsi().GetText(), &vca);
+    if (result != FMOD_OK)
+    {
+        FMODLOG(Warning, "Failed to get VCA at {}, Error: {}", vcaPath, String(FMOD_ErrorString(result)));
+        return -1.0f;
+    }
+    float volume;
+    vca->getVolume(&volume);
+    return volume;
 }

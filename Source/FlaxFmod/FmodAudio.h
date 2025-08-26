@@ -2,6 +2,7 @@
 
 #include "fmod_studio_common.h"
 #include "Assets/FmodBus.h"
+#include "Assets/FmodVca.h"
 #include "Engine/Core/Collections/Array.h"
 #include "Engine/Core/Log.h"
 #include "Engine/Audio/AudioDevice.h"
@@ -170,4 +171,24 @@ public:
     /// Gets whether the bus is paused.
     /// </summary>
     API_FUNCTION() static bool IsBusPaused(const String& busPath);
+
+    /// <summary>
+    /// Sets VCA volume.
+    /// </summary>
+    API_FUNCTION() static void SetVCAVolume(JsonAssetReference<FmodVca> vcaAsset, float volumeScale);
+
+    /// <summary>
+    /// Sets VCA volume.
+    /// </summary>
+    API_FUNCTION() static void SetVCAVolume(const String& vcaPath, float volumeScale);
+
+    /// <summary>
+    /// Gets VCA volume.
+    /// </summary>
+    API_FUNCTION() static float GetVCAVolume(JsonAssetReference<FmodVca> vcaAsset);
+
+    /// <summary>
+    /// Gets VCA volume.
+    /// </summary>
+    API_FUNCTION() static float GetVCAVolume(const String& vcaPath);
 };
