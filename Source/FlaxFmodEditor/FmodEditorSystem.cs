@@ -36,6 +36,10 @@ public class FmodEditorSystem : EditorPlugin
     private string _settingsPath;
     private JsonAsset _jsonAsset;
     
+    private SpriteAtlas _fmodEventIcon;
+    private SpriteAtlas _fmodBusIcon;
+    private SpriteAtlas _fmodVcaIcon;
+    
     private ContextMenu _fModPluginContextMenu;
     private ContextMenuButton _buildButton;
     private ContextMenuButton _openSettingsButton;
@@ -61,28 +65,28 @@ public class FmodEditorSystem : EditorPlugin
             _jsonAsset = Content.LoadAsync<JsonAsset>(_settingsPath);
             GameSettings.SetCustomSettings("FmodAudioSettings", _jsonAsset);
         }
-        
+
         ViewportIconsRenderer.AddCustomIcon(typeof(FmodAudioListener), Content.LoadAsync<Texture>(System.IO.Path.Combine(Globals.EngineContentFolder, "Editor/Icons/Textures/AudioListner.flax")));
         SceneGraphFactory.CustomNodesTypes.Add(typeof(FmodAudioListener), typeof(FmodAudioListenerNode));
-        
+
         ViewportIconsRenderer.AddCustomIcon(typeof(FmodAudioSource), Content.LoadAsync<Texture>(System.IO.Path.Combine(Globals.EngineContentFolder, "Editor/Icons/Textures/AudioSource.flax")));
         SceneGraphFactory.CustomNodesTypes.Add(typeof(FmodAudioSource), typeof(FmodAudioSourceNode));
 
-        var eventLogo = Content.Load<SpriteAtlas>("Plugins/FlaxFmod/Content/Editor/Icons/FMOD Event Image.flax");
-        eventLogo.WaitForLoaded();
-        var eventLogoSprite = eventLogo.FindSprite("Default");
+        _fmodEventIcon = Content.Load<SpriteAtlas>("Plugins/FlaxFmod/Content/Editor/Icons/FMOD Event Image.flax");
+        _fmodEventIcon.WaitForLoaded();
+        var eventLogoSprite = _fmodEventIcon.FindSprite("Default");
         Editor.ContentDatabase.AddProxy(new SpawnableJsonAssetProxy<FmodEvent>(eventLogoSprite));
-        
-        var busLogo = Content.Load<SpriteAtlas>("Plugins/FlaxFmod/Content/Editor/Icons/FMOD Bus Image.flax");
-        busLogo.WaitForLoaded();
-        var busLogoSprite = busLogo.FindSprite("Default");
+
+        _fmodBusIcon = Content.Load<SpriteAtlas>("Plugins/FlaxFmod/Content/Editor/Icons/FMOD Bus Image.flax");
+        _fmodBusIcon.WaitForLoaded();
+        var busLogoSprite = _fmodBusIcon.FindSprite("Default");
         Editor.ContentDatabase.AddProxy(new SpawnableJsonAssetProxy<FmodBus>(busLogoSprite));
 
-        var vcaLogo = Content.Load<SpriteAtlas>("Plugins/FlaxFmod/Content/Editor/Icons/FMOD VCA Image.flax");
-        vcaLogo.WaitForLoaded();
-        var vcaLogoSprite = vcaLogo.FindSprite("Default");
+        _fmodVcaIcon = Content.Load<SpriteAtlas>("Plugins/FlaxFmod/Content/Editor/Icons/FMOD VCA Image.flax");
+        _fmodVcaIcon.WaitForLoaded();
+        var vcaLogoSprite = _fmodVcaIcon.FindSprite("Default");
         Editor.ContentDatabase.AddProxy(new SpawnableJsonAssetProxy<FmodVca>(vcaLogoSprite));
-        
+
         // Menu Options
         var pluginsButton = Editor.UI.MainMenu.GetOrAddButton("Plugins");
         _fModPluginContextMenu = pluginsButton.ContextMenu.GetOrAddChildMenu("Fmod Plugin").ContextMenu;
@@ -93,7 +97,7 @@ public class FmodEditorSystem : EditorPlugin
 
         Editor.PlayModeBegin += OnPlayModeBegin;
         Editor.PlayModeEnd += OnPlayModeEnd;
-        
+
         GameCooker.DeployFiles += OnDeployFiles;
     }
 
@@ -589,6 +593,9 @@ public class FmodEditorSystem : EditorPlugin
         
         SceneGraphFactory.CustomNodesTypes.Remove(typeof(FmodAudioListener));
         SceneGraphFactory.CustomNodesTypes.Remove(typeof(FmodAudioSource));
+        Content.UnloadAsset(_fmodBusIcon);
+        Content.UnloadAsset(_fmodEventIcon);
+        Content.UnloadAsset(_fmodVcaIcon);
         Content.UnloadAsset(_jsonAsset);
     }
 }
