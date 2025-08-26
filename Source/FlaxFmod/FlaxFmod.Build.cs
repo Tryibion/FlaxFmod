@@ -45,17 +45,17 @@ public class FlaxFmod : GameModule
             case TargetPlatform.Linux:
                 // FMod Core Library
                 var linCoreLibPath = Path.Combine(fmodPath, "Linux", "core");
-                options.DependencyFiles.Add(Path.Combine(linCoreLibPath, "libfmod.so"));
-                options.DependencyFiles.Add(Path.Combine(linCoreLibPath, "libfmodL.so"));
-                options.Libraries.Add(Path.Combine(linCoreLibPath, "libfmod.so"));
-                options.Libraries.Add(Path.Combine(linCoreLibPath, "libfmodL.so"));
+                options.DependencyFiles.Add(Path.Combine(linCoreLibPath, "libfmod.so.14.8"));
+                options.DependencyFiles.Add(Path.Combine(linCoreLibPath, "libfmodL.so.14.8"));
+                options.Libraries.Add(Path.Combine(linCoreLibPath, "libfmod.so.14.8"));
+                options.Libraries.Add(Path.Combine(linCoreLibPath, "libfmodL.so.14.8"));
 
                 // FMod Studio Library
                 var linStudioLibPath = Path.Combine(fmodPath, "Linux", "studio");
-                options.DependencyFiles.Add(Path.Combine(linStudioLibPath, "libfmodstudio.so"));
-                options.DependencyFiles.Add(Path.Combine(linStudioLibPath, "libfmodstudioL.so"));
-                options.Libraries.Add(Path.Combine(linStudioLibPath, "libfmodstudio.so"));
-                options.Libraries.Add(Path.Combine(linStudioLibPath, "libfmodstudioL.so"));
+                options.DependencyFiles.Add(Path.Combine(linStudioLibPath, "libfmodstudio.so.14.8"));
+                options.DependencyFiles.Add(Path.Combine(linStudioLibPath, "libfmodstudioL.so.14.8"));
+                options.Libraries.Add(Path.Combine(linStudioLibPath, "libfmodstudio.so.14.8"));
+                options.Libraries.Add(Path.Combine(linStudioLibPath, "libfmodstudioL.so.14.8"));
                 break;
             default:
                 break;
