@@ -73,19 +73,18 @@ public class FmodEditorSystem : EditorPlugin
         SceneGraphFactory.CustomNodesTypes.Add(typeof(FmodAudioSource), typeof(FmodAudioSourceNode));
 
         _fmodEventIcon = Content.Load<SpriteAtlas>("Plugins/FlaxFmod/Content/Editor/Icons/FMOD Event Image.flax");
-        _fmodEventIcon.WaitForLoaded();
         var eventLogoSprite = _fmodEventIcon.FindSprite("Default");
         Editor.ContentDatabase.AddProxy(new SpawnableJsonAssetProxy<FmodEvent>(eventLogoSprite));
 
         _fmodBusIcon = Content.Load<SpriteAtlas>("Plugins/FlaxFmod/Content/Editor/Icons/FMOD Bus Image.flax");
-        _fmodBusIcon.WaitForLoaded();
         var busLogoSprite = _fmodBusIcon.FindSprite("Default");
         Editor.ContentDatabase.AddProxy(new SpawnableJsonAssetProxy<FmodBus>(busLogoSprite));
 
         _fmodVcaIcon = Content.Load<SpriteAtlas>("Plugins/FlaxFmod/Content/Editor/Icons/FMOD VCA Image.flax");
-        _fmodVcaIcon.WaitForLoaded();
         var vcaLogoSprite = _fmodVcaIcon.FindSprite("Default");
         Editor.ContentDatabase.AddProxy(new SpawnableJsonAssetProxy<FmodVca>(vcaLogoSprite));
+
+        Editor.ContentDatabase.Rebuild(true);
 
         // Menu Options
         var pluginsButton = Editor.UI.MainMenu.GetOrAddButton("Plugins");
