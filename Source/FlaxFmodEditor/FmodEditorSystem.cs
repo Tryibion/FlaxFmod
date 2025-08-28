@@ -227,7 +227,16 @@ public class FmodEditorSystem : EditorPlugin
         {
             var attrib = File.GetAttributes(studioPath);
             if (attrib.HasFlag(FileAttributes.Directory))
-                studioPath = Path.Combine(studioPath, "fmodstudio.exe");
+            {
+                // Try to find executable in directory.
+                var foundStudio = Directory.GetFiles(studioPath, "fmodstudio*", SearchOption.TopDirectoryOnly);
+                if (foundStudio.Length == 0)
+                {
+                    FlaxEditor.Editor.LogWarning("FMOD studio executable does not exist at path.");
+                    return false;
+                }
+                studioPath = foundStudio[0];
+            }
             
             if (!File.Exists(studioPath))
             {
