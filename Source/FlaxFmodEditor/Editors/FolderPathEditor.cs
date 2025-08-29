@@ -61,8 +61,9 @@ public sealed class FolderPathEditor : CustomEditor
         bool folderNotFound = FileSystem.ShowBrowseFolderDialog(_window, initialPath, "Select a folder", out var folderPath);
         if (folderNotFound)
             return;
-        
+
         var path = Path.GetRelativePath(Globals.ProjectFolder, folderPath);
+        path = path.Replace("\\", "/");
         SetValue(path);
     }
 
