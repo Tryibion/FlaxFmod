@@ -23,5 +23,5 @@ public:
     /// </summary>
     API_FUNCTION() bool IsLoaded();
 
-    String GetPathName();
+    String GetBankName();
 };

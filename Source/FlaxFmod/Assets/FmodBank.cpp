@@ -4,20 +4,20 @@
 
 void FmodBank::Load()
 {
-    FmodAudio::LoadBank(GetPathName());
+    FmodAudio::LoadBank(GetBankName());
 }
 
 void FmodBank::Unload()
 {
-    FmodAudio::UnloadBank(GetPathName());
+    FmodAudio::UnloadBank(GetBankName());
 }
 
 bool FmodBank::IsLoaded()
 {
-    return FmodAudio::IsBankLoaded(GetPathName());
+    return FmodAudio::IsBankLoaded(GetBankName());
 }
 
-String FmodBank::GetPathName()
+String FmodBank::GetBankName()
 {
     auto name = Path;
     name.Replace(TEXT("bank:/"), TEXT(""), StringSearchCase::IgnoreCase);
