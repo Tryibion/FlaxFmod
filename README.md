@@ -2,7 +2,7 @@
 
 This is a port of the FMOD audio engine into the Flax Game Engine.
 
-Enjoy this plugin and want to donate. Here is a link to donate on [ko-fi](https://ko-fi.com/tryibion).
+Enjoy this plugin? Here is a link to donate on [ko-fi](https://ko-fi.com/tryibion).
 
 ## Licensing
 Licensing and terms of agreement need to follow the FMOD license and terms of agreement found on the [FMOD licensing webpage](https://www.fmod.com/licensing?target=_blank)
