@@ -26,9 +26,13 @@ public:
     void Initialize() override;
     void Deinitialize() override;
 
-    // Master volume
+    // Master
     void SetMasterVolume(float volumeMultiplier);
     float GetMasterVolume();
+    void SetMasterPaused(bool paused);
+    bool IsMasterPaused();
+    void SetMasterPitch(float value);
+    float GetMasterPitch();
 
     // Bank
     void LoadBank(const StringView& bankPath, int loadFlags);

@@ -311,6 +311,62 @@ float FmodAudioSystem::GetMasterVolume()
     return volume;
 }
 
+void FmodAudioSystem::SetMasterPaused(bool paused)
+{
+    FMOD::ChannelGroup* masterChannelGroup = nullptr;
+    auto result = _coreSystem->getMasterChannelGroup(&masterChannelGroup);
+    if (result != FMOD_OK)
+    {
+        FMODLOG(Warning, "Failed to get master channel group to set master paused, Error: {}", String(FMOD_ErrorString(result)));
+        return;
+    }
+    masterChannelGroup->setPaused(paused);
+}
+
+bool FmodAudioSystem::IsMasterPaused()
+{
+    FMOD::ChannelGroup* masterChannelGroup = nullptr;
+    auto result = _coreSystem->getMasterChannelGroup(&masterChannelGroup);
+    if (result != FMOD_OK)
+    {
+        FMODLOG(Warning, "Failed to get master channel group to get master paused, Error: {}", String(FMOD_ErrorString(result)));
+        return false;
+    }
+    bool paused;
+    result = masterChannelGroup->getPaused(&paused);
+    if (result != FMOD_OK)
+        FMODLOG(Warning, "Failed to get master paused, Error: {}", String(FMOD_ErrorString(result)));
+    return paused;
+}
+
+void FmodAudioSystem::SetMasterPitch(float value)
+{
+    FMOD::ChannelGroup* masterChannelGroup = nullptr;
+    auto result = _coreSystem->getMasterChannelGroup(&masterChannelGroup);
+    if (result != FMOD_OK)
+    {
+        FMODLOG(Warning, "Failed to get master channel group to set master pitch, Error: {}", String(FMOD_ErrorString(result)));
+        return;
+    }
+    masterChannelGroup->setPitch(value);
+}
+
+float FmodAudioSystem::GetMasterPitch()
+{
+    FMOD::ChannelGroup* masterChannelGroup = nullptr;
+    auto result = _coreSystem->getMasterChannelGroup(&masterChannelGroup);
+    if (result != FMOD_OK)
+    {
+        FMODLOG(Warning, "Failed to get master channel group to get master pitch, Error: {}", String(FMOD_ErrorString(result)));
+        return -1.0f;
+    }
+    float pitch = -1.0f;
+    result = masterChannelGroup->getPitch(&pitch);
+    if (result != FMOD_OK)
+        return -1.0f;
+    return pitch;
+}
+
 void FmodAudioSystem::LoadBank(const StringView& bankPath, int loadFlags)
 {
     if (IsBankLoaded(bankPath))

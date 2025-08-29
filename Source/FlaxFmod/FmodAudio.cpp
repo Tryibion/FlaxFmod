@@ -68,6 +68,34 @@ float FmodAudio::GetMasterVolume()
     return _audioSystem->GetMasterVolume();
 }
 
+void FmodAudio::SetMasterPaused(bool paused)
+{
+    if (!_audioSystem)
+        return;
+    _audioSystem->SetMasterPaused(paused);
+}
+
+bool FmodAudio::GetMasterPaused()
+{
+    if (!_audioSystem)
+        return false;
+    return _audioSystem->IsMasterPaused();
+}
+
+void FmodAudio::SetMasterPitch(float pitch)
+{
+    if (!_audioSystem)
+        return;
+    _audioSystem->SetMasterPitch(pitch);
+}
+
+float FmodAudio::GetMasterPitch()
+{
+    if (!_audioSystem)
+        return -1.0f;
+    return _audioSystem->GetMasterPitch();
+}
+
 void FmodAudio::SetGlobalParameter(const String& name, float value)
 {
     if (!_audioSystem)

@@ -87,6 +87,26 @@ public:
     API_FUNCTION() static float GetMasterVolume();
 
     /// <summary>
+    /// Sets the master audio channel mute.
+    /// </summary>
+    API_FUNCTION() static void SetMasterPaused(bool paused);
+
+    /// <summary>
+    /// Gets the master audio channel mute.
+    /// </summary>
+    API_FUNCTION() static bool GetMasterPaused();
+
+    /// <summary>
+    /// Sets the master audio channel pitch.
+    /// </summary>
+    API_FUNCTION() static void SetMasterPitch(float pitch);
+
+    /// <summary>
+    /// Gets the master audio channel pitch.
+    /// </summary>
+    API_FUNCTION() static float GetMasterPitch();
+
+    /// <summary>
     /// Sets a global FMOD parameter based on name.
     /// </summary>
     API_FUNCTION() static void SetGlobalParameter(const String& name, float value);
