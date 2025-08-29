@@ -156,6 +156,16 @@ bool FmodAudioSource::IsPlaying()
     return FmodAudio::GetAudioSystem()->IsEventPlaying(EventInstance);
 }
 
+bool FmodAudioSource::Is3D()
+{
+    if (!CheckForEvent())
+        return false;
+
+    if (EventInstance && Engine::IsPlayMode())
+        return FmodAudio::GetAudioSystem()->IsEvent3D(EventInstance);
+    return false;
+}
+
 void FmodAudioSource::SetParameter(const String& parameterName, float value)
 {
     if (!CheckForEvent())

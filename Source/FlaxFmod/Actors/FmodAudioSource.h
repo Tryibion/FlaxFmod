@@ -268,6 +268,11 @@ public:
     API_FUNCTION() bool IsPlaying();
 
     /// <summary>
+    /// Gets if the event playing is 3D or not.
+    /// </summary>
+    API_FUNCTION() bool Is3D();
+
+    /// <summary>
     /// Sets a event parameter based on its name.
     /// </summary>
     API_FUNCTION() void SetParameter(const String& parameterName, float value);
