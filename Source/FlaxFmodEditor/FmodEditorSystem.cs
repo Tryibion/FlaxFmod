@@ -331,12 +331,8 @@ public class FmodEditorSystem : EditorPlugin
         var snapshotsFilePath = Path.Combine(studioProjectDirectory, "fmod_snapshots_export.json");
         if (File.Exists(snapshotsFilePath))
         {
-            var newGuidLocation = Path.Combine(Globals.ProjectSourceFolder, "FMOD", "fmod_snapshots_export.json");
-            Directory.CreateDirectory(Path.GetDirectoryName(newGuidLocation));
-            File.Copy(snapshotsFilePath, newGuidLocation, true);
-
-            // Create individual files for each event.
-            var fileInfo = File.ReadAllText(newGuidLocation);
+            // Create individual files for each Snapshot.
+            var fileInfo = File.ReadAllText(snapshotsFilePath);
             var events = JsonSerializer.Deserialize<List<FmodEditorAsset>>(fileInfo);
             var snapshotFolder = Path.Combine(Globals.ProjectFolder, settings.EditorStorageRelativeFolderPath, "Snapshots");
             if (!Directory.Exists(snapshotFolder))
@@ -415,12 +411,8 @@ public class FmodEditorSystem : EditorPlugin
         var busFilePath = Path.Combine(studioProjectDirectory, "fmod_banks_export.json");
         if (File.Exists(busFilePath))
         {
-            var newGuidLocation = Path.Combine(Globals.ProjectSourceFolder, "FMOD", "fmod_banks_export.json");
-            Directory.CreateDirectory(Path.GetDirectoryName(newGuidLocation));
-            File.Copy(busFilePath, newGuidLocation, true);
-
-            // Create individual files for each event.
-            var fileInfo = File.ReadAllText(newGuidLocation);
+            // Create individual files for each bank.
+            var fileInfo = File.ReadAllText(busFilePath);
             var banks = JsonSerializer.Deserialize<List<FmodEditorAsset>>(fileInfo);
             var bankFolder = Path.Combine(Globals.ProjectFolder, settings.EditorStorageRelativeFolderPath, "Banks");
             if (!Directory.Exists(bankFolder))
@@ -496,15 +488,11 @@ public class FmodEditorSystem : EditorPlugin
     private void CreateVCAAssets(FmodAudioSettings settings, string studioProjectPath)
     {
         var studioProjectDirectory = Path.GetDirectoryName(studioProjectPath);
-        var busFilePath = Path.Combine(studioProjectDirectory, "fmod_vca_export.json");
-        if (File.Exists(busFilePath))
+        var vcaFilePath = Path.Combine(studioProjectDirectory, "fmod_vca_export.json");
+        if (File.Exists(vcaFilePath))
         {
-            var newGuidLocation = Path.Combine(Globals.ProjectSourceFolder, "FMOD", "fmod_vca_export.json");
-            Directory.CreateDirectory(Path.GetDirectoryName(newGuidLocation));
-            File.Copy(busFilePath, newGuidLocation, true);
-
-            // Create individual files for each event.
-            var fileInfo = File.ReadAllText(newGuidLocation);
+            // Create individual files for each vca.
+            var fileInfo = File.ReadAllText(vcaFilePath);
             var vcas = JsonSerializer.Deserialize<List<FmodEditorAsset>>(fileInfo);
             var vcaFolder = Path.Combine(Globals.ProjectFolder, settings.EditorStorageRelativeFolderPath, "VCAs");
             if (!Directory.Exists(vcaFolder))
@@ -583,12 +571,8 @@ public class FmodEditorSystem : EditorPlugin
         var busFilePath = Path.Combine(studioProjectDirectory, "fmod_bus_export.json");
         if (File.Exists(busFilePath))
         {
-            var newGuidLocation = Path.Combine(Globals.ProjectSourceFolder, "FMOD", "fmod_bus_export.json");
-            Directory.CreateDirectory(Path.GetDirectoryName(newGuidLocation));
-            File.Copy(busFilePath, newGuidLocation, true);
-
-            // Create individual files for each event.
-            var fileInfo = File.ReadAllText(newGuidLocation);
+            // Create individual files for each bus.
+            var fileInfo = File.ReadAllText(busFilePath);
             var buses = JsonSerializer.Deserialize<List<FmodEditorAsset>>(fileInfo);
             var busFolder = Path.Combine(Globals.ProjectFolder, settings.EditorStorageRelativeFolderPath, "Buses");
             if (!Directory.Exists(busFolder))
@@ -670,12 +654,8 @@ public class FmodEditorSystem : EditorPlugin
         var eventsFilePath = Path.Combine(studioProjectDirectory, "fmod_events_export.json");
         if (File.Exists(eventsFilePath))
         {
-            var newGuidLocation = Path.Combine(Globals.ProjectSourceFolder, "FMOD", "fmod_events_export.json");
-            Directory.CreateDirectory(Path.GetDirectoryName(newGuidLocation));
-            File.Copy(eventsFilePath, newGuidLocation, true);
-
             // Create individual files for each event.
-            var fileInfo = File.ReadAllText(newGuidLocation);
+            var fileInfo = File.ReadAllText(eventsFilePath);
             var events = JsonSerializer.Deserialize<List<FmodEditorAsset>>(fileInfo);
             var eventFolder = Path.Combine(Globals.ProjectFolder, settings.EditorStorageRelativeFolderPath, "Events");
             if (!Directory.Exists(eventFolder))
