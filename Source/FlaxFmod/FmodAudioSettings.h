@@ -35,16 +35,18 @@ public:
     API_FIELD() String BuiltProjectBankRelativeFolderPath = TEXT("Content/fmod");
 
     /// <summary>
-    /// The FMOD folder used for storing generating assets.
+    /// The FMOD folder used for storing generating assets. Please put this in the Content Folder somewhere.
     /// This is relative to the project folder.
     /// </summary>
-    API_FIELD(Attributes="EditorDisplay(\"Editor\")") String EditorStorageRelativeFolderPath = TEXT("Content/FMOD");
+    API_FIELD(Attributes="EditorDisplay(\"Editor\"), CustomEditorAlias(\"FlaxFmod.Editor.FolderPathEditor\")")
+    String EditorStorageRelativeFolderPath = TEXT("Content/FMOD");
 
     /// <summary>
     /// The folder where the .fspro project is located.
     /// This is relative to the project folder.
     /// </summary>
-    API_FIELD(Attributes="EditorDisplay(\"Editor\")") String FmodStudioRelativeProjectPath = TEXT("FMOD"); // Todo: make this a file path editor
+    API_FIELD(Attributes="EditorDisplay(\"Editor\"), CustomEditorAlias(\"FlaxFmod.Editor.FolderPathEditor\")")
+    String FmodStudioRelativeProjectPath = TEXT("FMOD"); // Todo: make this a file path editor
 
     /// <summary>
     /// Editor Only. The environment variable where Fmod studio location is stored. Absolute path will be used if this does not exist.
