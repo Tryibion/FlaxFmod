@@ -5,6 +5,7 @@
 #include "Engine/Scripting/Plugins/PluginManager.h"
 #include "Actors/FmodAudioListener.h"
 #include "Actors/FmodAudioSource.h"
+#include "Engine/Level/Level.h"
 #include "Types/FmodAudioDevice.h"
 
 FmodAudioSystem* FmodAudio::_audioSystem = nullptr;
@@ -52,6 +53,20 @@ void FmodAudio::SetActiveAudioDevice(int index)
 int FmodAudio::GetActiveAudioDevice()
 {
     return _activeAudioDeviceIndex;
+}
+
+void FmodAudio::PlayEventAtLocation(const JsonAssetReference<FmodEvent>& fmodEvent, const Vector3& location)
+{
+    if (!_audioSystem)
+        return;
+
+    // TODO: object pooling for better memory efficiency
+    FmodAudioSource* source = New<FmodAudioSource>();
+    Level::SpawnActor(source);
+    source->Event = fmodEvent;
+    source->SetPosition(location);
+    source->Play();
+    source->DeleteObject(source->GetEventLength(), true);
 }
 
 void FmodAudio::SetMasterVolume(float volume)

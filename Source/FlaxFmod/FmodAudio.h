@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Assets/FmodBus.h"
+#include "Assets/FmodEvent.h"
 #include "Assets/FmodVca.h"
 #include "Engine/Core/Collections/Array.h"
 #include "Engine/Core/Log.h"
@@ -75,6 +76,12 @@ public:
     /// Gets the active audio device index. Can be used with the AudioDevices list to get the name.
     /// </summary>
     API_FUNCTION() static int GetActiveAudioDevice();
+
+    /// <summary>
+    /// Plays an event at the specified location. Will spawn an audio source at the location for the duration of the event.
+    /// This is good for one-shot events.
+    /// </summary>
+    API_FUNCTION() static void PlayEventAtLocation(const JsonAssetReference<FmodEvent>& fmodEvent, const Vector3& location);
 
     /// <summary>
     /// Sets the master audio channel volume.
