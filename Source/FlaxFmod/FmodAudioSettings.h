@@ -35,13 +35,13 @@ public:
     API_FIELD() String BuiltProjectBankRelativeFolderPath = TEXT("Content/fmod");
 
     /// <summary>
-    /// The FMOD folder used for storing banks in the editor and generating assets.
+    /// The FMOD folder used for storing generating assets.
     /// This is relative to the project folder.
     /// </summary>
     API_FIELD(Attributes="EditorDisplay(\"Editor\")") String EditorStorageRelativeFolderPath = TEXT("Content/FMOD");
 
     /// <summary>
-    /// The folder or file where the .fspro project is located.
+    /// The folder where the .fspro project is located.
     /// This is relative to the project folder.
     /// </summary>
     API_FIELD(Attributes="EditorDisplay(\"Editor\")") String FmodStudioRelativeProjectPath = TEXT("FMOD"); // Todo: make this a file path editor

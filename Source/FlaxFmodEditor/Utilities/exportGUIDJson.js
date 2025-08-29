@@ -1,3 +1,28 @@
+function exportBanksToJson() {
+    
+    // Get a flat list of all banks in the project.
+    var banks = studio.project.model.Bank.findInstances();
+    
+    // An array to hold the bank data.
+    var bankData = [];
+    
+    // Iterate through the list of all banks.
+    for (var i = 0; i < banks.length; i++) {
+        var bank = banks[i];
+        
+        // Push the bank's path and GUID to our data array.
+        bankData.push({
+            "Path": bank.getPath(),
+            "Guid": bank.id.toString(),
+        });
+    }
+
+    var outputPath = exportData(bankData, "fmod_banks_export");
+
+    // Log a success message to the FMOD Studio console.
+    console.log("FMOD bank data exported to: " + outputPath);
+}
+
 function exportEventsToJson() {
     
     // Get a flat list of all events in the project.
@@ -94,6 +119,7 @@ function exportData(data, fileName) {
 }
 
 // Execute the main function.
+exportBanksToJson();
 exportEventsToJson();
 exportBusesToJson();
 exportVCAsToJson();

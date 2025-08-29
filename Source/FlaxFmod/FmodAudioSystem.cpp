@@ -145,7 +145,7 @@ void FmodAudioSystem::Initialize()
     // Always load master banks
 #if USE_EDITOR
     // Todo: make this work for other platforms once supported.
-    auto relativeBankPath = settings->EditorStorageRelativeFolderPath + TEXT("/") + TEXT("Build") + TEXT("/") + TEXT("Desktop");
+    auto relativeBankPath = settings->FmodStudioRelativeProjectPath + TEXT("/") + TEXT("Build") + TEXT("/") + TEXT("Desktop");
 #else
     auto relativeBankPath = settings->BuiltProjectBankRelativeFolderPath;
 #endif
@@ -283,7 +283,7 @@ void FmodAudioSystem::LoadBank(const String& bankName)
 
 #if USE_EDITOR
     // Todo: make this work for other platforms once supported.
-    auto relativeBankPath = settings->EditorStorageRelativeFolderPath + TEXT("/") + TEXT("Build") + TEXT("/") + TEXT("Desktop");
+    auto relativeBankPath = settings->FmodStudioRelativeProjectPath + TEXT("/") + TEXT("Build") + TEXT("/") + TEXT("Desktop");
 #else
     auto relativeBankPath = settings->BuiltProjectBankRelativeFolderPath;
 #endif

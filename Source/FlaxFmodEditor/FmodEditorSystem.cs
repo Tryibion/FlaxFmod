@@ -39,6 +39,7 @@ public class FmodEditorSystem : EditorPlugin
     private SpriteAtlas _fmodEventIcon;
     private SpriteAtlas _fmodBusIcon;
     private SpriteAtlas _fmodVcaIcon;
+    private SpriteAtlas _fmodBankIcon;
     
     private ContextMenu _fModPluginContextMenu;
     private ContextMenuButton _buildButton;
@@ -84,6 +85,10 @@ public class FmodEditorSystem : EditorPlugin
         var vcaLogoSprite = _fmodVcaIcon.FindSprite("Default");
         Editor.ContentDatabase.AddProxy(new SpawnableJsonAssetProxy<FmodVca>(vcaLogoSprite));
 
+        _fmodBankIcon = Content.Load<SpriteAtlas>("Plugins/FlaxFmod/Content/Editor/Icons/FMOD Bank Image.flax");
+        var bankLogoSprite = _fmodBankIcon.FindSprite("Default");
+        Editor.ContentDatabase.AddProxy(new SpawnableJsonAssetProxy<FmodBank>(bankLogoSprite));
+
         Editor.ContentDatabase.Rebuild(true);
 
         // Menu Options
@@ -108,8 +113,7 @@ public class FmodEditorSystem : EditorPlugin
             var builtBankFolderPath = Path.Combine(GameCooker.CurrentData.DataOutputPath, settings.BuiltProjectBankRelativeFolderPath);
 
             // TODO: Get specific bank folder based on platform.
-            var editorBankFolderPath = Path.Combine(Globals.ProjectFolder, settings.EditorStorageRelativeFolderPath, "Build", "Desktop");
-
+            var editorBankFolderPath = Path.Combine(Globals.ProjectFolder, settings.FmodStudioRelativeProjectPath, "Build", "Desktop");
             var banks = Directory.GetFiles(editorBankFolderPath, "*.bank", SearchOption.AllDirectories);
             
             if (!Directory.Exists(builtBankFolderPath))
@@ -309,9 +313,94 @@ public class FmodEditorSystem : EditorPlugin
         FlaxEditor.Editor.Log("FMOD studio script completed.");
 
         // Create assets
+        CreateBankAssets(settings, studioProjectPath);
         CreateEventAssets(settings, studioProjectPath);
         CreateBusAssets(settings, studioProjectPath);
         CreateVCAAssets(settings, studioProjectPath);
+    }
+
+    private void CreateBankAssets(FmodAudioSettings settings, string studioProjectPath)
+    {
+        var studioProjectDirectory = Path.GetDirectoryName(studioProjectPath);
+        var busFilePath = Path.Combine(studioProjectDirectory, "fmod_banks_export.json");
+        if (File.Exists(busFilePath))
+        {
+            var newGuidLocation = Path.Combine(Globals.ProjectSourceFolder, "FMOD", "fmod_banks_export.json");
+            Directory.CreateDirectory(Path.GetDirectoryName(newGuidLocation));
+            File.Copy(busFilePath, newGuidLocation, true);
+
+            // Create individual files for each event.
+            var fileInfo = File.ReadAllText(newGuidLocation);
+            var banks = JsonSerializer.Deserialize<List<FmodEditorAsset>>(fileInfo);
+            var bankFolder = Path.Combine(Globals.ProjectFolder, settings.EditorStorageRelativeFolderPath, "Banks");
+            if (!Directory.Exists(bankFolder))
+                Directory.CreateDirectory(bankFolder);
+            
+            // Get existing assets.
+            Dictionary<string, JsonAsset> existingAssets = new Dictionary<string, JsonAsset>(); // FMOD Guid, Asset
+            List<JsonAsset> jsonAssetRemovalList = new List<JsonAsset>();
+            var assetIds = Content.GetAllAssetsByType(typeof(FmodVca));
+            foreach (var assetId in assetIds)
+            {
+                var asset = Content.Load<JsonAsset>(assetId);
+                if (asset != null)
+                {
+                    var eventInstance = asset.GetInstance<FmodVca>();
+                    existingAssets.Add(eventInstance.Guid, asset);
+                    jsonAssetRemovalList.Add(asset);
+                }
+            }
+
+            // Rebuild assets
+            foreach (var vca in banks)
+            {
+                var relativeBankPath = vca.Path.Replace("bank:/", "");
+                relativeBankPath += ".json";
+                var savePath = StringUtils.NormalizePath(Path.Combine(bankFolder, relativeBankPath));
+                var saveFolder =  Path.GetDirectoryName(savePath);
+                
+                if (existingAssets.ContainsKey(vca.Guid))
+                {
+                    var asset = existingAssets[vca.Guid];
+ 
+                    // Don't remove asset because it exists.
+                    jsonAssetRemovalList.Remove(asset);
+                    
+                    // Check path to ensure the correct path. Move if not correct.
+                    if (!asset.Path.Equals(savePath, StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (!Directory.Exists(saveFolder))
+                            Directory.CreateDirectory(saveFolder);
+
+                        var busInstance = asset.GetInstance<FmodVca>();
+                        busInstance.Path = vca.Path;
+                        Content.RenameAsset(asset.Path, savePath);
+                    }
+                }
+                else
+                {
+                    // Create new asset.
+                    if (!Directory.Exists(saveFolder))
+                        Directory.CreateDirectory(saveFolder);
+
+                    FmodBank fmodBus = new FmodBank
+                    {
+                        Path = vca.Path,
+                        Guid = vca.Guid,
+                    };
+                    FlaxEditor.Editor.SaveJsonAsset(savePath, fmodBus);
+                }
+            }
+            
+            // Remove not reference json assets.
+            foreach (var asset in jsonAssetRemovalList)
+            {
+                Content.DeleteAsset(asset);
+            }
+            
+            // Remove empty directories.
+            RemoveEmptyDirectories(bankFolder);
+        }
     }
 
     private void CreateVCAAssets(FmodAudioSettings settings, string studioProjectPath)
@@ -604,6 +693,7 @@ public class FmodEditorSystem : EditorPlugin
         Content.UnloadAsset(_fmodBusIcon);
         Content.UnloadAsset(_fmodEventIcon);
         Content.UnloadAsset(_fmodVcaIcon);
+        Content.UnloadAsset(_fmodBankIcon);
         Content.UnloadAsset(_jsonAsset);
     }
 }
