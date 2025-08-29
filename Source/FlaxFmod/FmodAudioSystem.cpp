@@ -662,8 +662,6 @@ float FmodAudioSystem::GetEventMinDistance(void* eventInstance)
 
     float minDistance;
     static_cast<FMOD::Studio::EventInstance*>(eventInstance)->getMinMaxDistance(&minDistance, nullptr);
-    FMOD::Studio::EventDescription* eventDescription = nullptr;
-    static_cast<FMOD::Studio::EventInstance*>(eventInstance)->getDescription(&eventDescription);
     return minDistance;
 }
 
@@ -713,8 +711,7 @@ float FmodAudioSystem::GetEventParameter(void* eventInstance, const StringView& 
         return -1.0f;
 
     float value = -1.0f;
-    auto result = static_cast<FMOD::Studio::EventInstance*>(eventInstance)->getParameterByName(
-        parameterName.ToStringAnsi().GetText(), &value);
+    auto result = static_cast<FMOD::Studio::EventInstance*>(eventInstance)->getParameterByName(parameterName.ToStringAnsi().GetText(), &value);
     if (result != FMOD_OK)
         FMODLOG(Warning, "Failed to get event parameter {}. Error: {}", parameterName.ToString(),
             String(FMOD_ErrorString(result)));
