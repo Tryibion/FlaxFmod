@@ -47,6 +47,7 @@ public class FmodEditorSystem : EditorPlugin
     private ContextMenuButton _openSettingsButton;
     private ContextMenuButton _openFmodProjectButton;
     private ContextMenuButton _generateGuidButton;
+    private ContextMenuButton _buildAndGenerateButton;
     
     private GameWindow _gameWindow;
     private float _storedMasterVolume;
@@ -100,8 +101,9 @@ public class FmodEditorSystem : EditorPlugin
         var pluginsButton = Editor.UI.MainMenu.GetOrAddButton("Plugins");
         _fModPluginContextMenu = pluginsButton.ContextMenu.GetOrAddChildMenu("Fmod Plugin").ContextMenu;
         _openFmodProjectButton = _fModPluginContextMenu.AddButton("Open Fmod Project", OpenFmodProject);
-        _buildButton = _fModPluginContextMenu.AddButton("Build Fmod project", BuildFmodProject);
+        _buildButton = _fModPluginContextMenu.AddButton("Build Fmod Project", BuildFmodProject);
         _generateGuidButton = _fModPluginContextMenu.AddButton("Generate Guid Assets", GenerateFmodGuidAssets);
+        _buildAndGenerateButton = _fModPluginContextMenu.AddButton("Build Project and Generate Assets", BuildAndGenerate);
         _openSettingsButton = _fModPluginContextMenu.AddButton("Open Fmod Settings", OpenSettings);
 
         Editor.PlayModeBegin += OnPlayModeBegin;
@@ -204,7 +206,11 @@ public class FmodEditorSystem : EditorPlugin
             FlaxEditor.Editor.Log($"FMOD studio build running. {output}");
         process?.WaitForExit();
         FlaxEditor.Editor.Log("FMOD studio build complete.");
-        
+    }
+
+    private void BuildAndGenerate()
+    {
+        BuildFmodProject();
         GenerateFmodGuidAssets();
     }
 
@@ -752,6 +758,8 @@ public class FmodEditorSystem : EditorPlugin
         _openFmodProjectButton = null;
         _generateGuidButton.Dispose();
         _generateGuidButton = null;
+        _buildAndGenerateButton.Dispose();
+        _buildAndGenerateButton = null;
         _fModPluginContextMenu = null;
         
         Editor.PlayModeBegin -= OnPlayModeBegin;
