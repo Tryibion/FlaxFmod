@@ -339,14 +339,14 @@ public class FmodEditorSystem : EditorPlugin
             // Get existing assets.
             Dictionary<string, JsonAsset> existingAssets = new Dictionary<string, JsonAsset>(); // FMOD Guid, Asset
             List<JsonAsset> jsonAssetRemovalList = new List<JsonAsset>();
-            var assetIds = Content.GetAllAssetsByType(typeof(FmodVca));
+            var assetIds = Content.GetAllAssetsByType(typeof(FmodBank));
             foreach (var assetId in assetIds)
             {
                 var asset = Content.Load<JsonAsset>(assetId);
                 if (asset != null)
                 {
-                    var eventInstance = asset.GetInstance<FmodVca>();
-                    existingAssets.Add(eventInstance.Guid, asset);
+                    var bankInstance = asset.GetInstance<FmodBank>();
+                    existingAssets.Add(bankInstance.Guid, asset);
                     jsonAssetRemovalList.Add(asset);
                 }
             }
@@ -372,8 +372,8 @@ public class FmodEditorSystem : EditorPlugin
                         if (!Directory.Exists(saveFolder))
                             Directory.CreateDirectory(saveFolder);
 
-                        var busInstance = asset.GetInstance<FmodVca>();
-                        busInstance.Path = vca.Path;
+                        var bankInstance = asset.GetInstance<FmodVca>();
+                        bankInstance.Path = vca.Path;
                         Content.RenameAsset(asset.Path, savePath);
                     }
                 }
@@ -383,12 +383,12 @@ public class FmodEditorSystem : EditorPlugin
                     if (!Directory.Exists(saveFolder))
                         Directory.CreateDirectory(saveFolder);
 
-                    FmodBank fmodBus = new FmodBank
+                    FmodBank fmodBank = new FmodBank
                     {
                         Path = vca.Path,
                         Guid = vca.Guid,
                     };
-                    FlaxEditor.Editor.SaveJsonAsset(savePath, fmodBus);
+                    FlaxEditor.Editor.SaveJsonAsset(savePath, fmodBank);
                 }
             }
             
@@ -429,8 +429,8 @@ public class FmodEditorSystem : EditorPlugin
                 var asset = Content.Load<JsonAsset>(assetId);
                 if (asset != null)
                 {
-                    var eventInstance = asset.GetInstance<FmodVca>();
-                    existingAssets.Add(eventInstance.Guid, asset);
+                    var vcaInstance = asset.GetInstance<FmodVca>();
+                    existingAssets.Add(vcaInstance.Guid, asset);
                     jsonAssetRemovalList.Add(asset);
                 }
             }
@@ -456,8 +456,8 @@ public class FmodEditorSystem : EditorPlugin
                         if (!Directory.Exists(saveFolder))
                             Directory.CreateDirectory(saveFolder);
 
-                        var busInstance = asset.GetInstance<FmodVca>();
-                        busInstance.Path = vca.Path;
+                        var vcaInstance = asset.GetInstance<FmodVca>();
+                        vcaInstance.Path = vca.Path;
                         Content.RenameAsset(asset.Path, savePath);
                     }
                 }
@@ -467,12 +467,12 @@ public class FmodEditorSystem : EditorPlugin
                     if (!Directory.Exists(saveFolder))
                         Directory.CreateDirectory(saveFolder);
 
-                    FmodVca fmodBus = new FmodVca
+                    FmodVca fmodVca = new FmodVca
                     {
                         Path = vca.Path,
                         Guid = vca.Guid,
                     };
-                    FlaxEditor.Editor.SaveJsonAsset(savePath, fmodBus);
+                    FlaxEditor.Editor.SaveJsonAsset(savePath, fmodVca);
                 }
             }
             
@@ -513,9 +513,9 @@ public class FmodEditorSystem : EditorPlugin
                 var asset = Content.Load<JsonAsset>(assetId);
                 if (asset != null)
                 {
-                    var eventInstance = asset.GetInstance<FmodBus>();
+                    var busInstance = asset.GetInstance<FmodBus>();
                     //Debug.Log($"asset Path: {asset.Path} Bus: {eventInstance.Path}, Guid: {eventInstance.Guid}");
-                    existingAssets.Add(eventInstance.Guid, asset);
+                    existingAssets.Add(busInstance.Guid, asset);
                     jsonAssetRemovalList.Add(asset);
                 }
             }
