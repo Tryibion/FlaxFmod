@@ -24,7 +24,7 @@ To add this plugin project to your game, follow the instructions in the [Flax En
 4. Create an FMOD project. The standard location to store the FMOD project is in the game project's root directory in a folder called FMOD. If it is desirable to store the project elsewhere, in the `FmodAudioSettings` a relative path to the project can be adjusted.
 5. Create a folder in the game's `Content` directory specific for FMOD. The standard is a folder located under the `Content` folder named "FMOD".
 6. In `FmodAudioSettings`, set the editor build location to the folder created in step 5. This path will be relative to the game project's directory.
-7. Set the same build directory in the FMOD project.
+7. Keep the default build directory set as empty in the FMOD studio project.
 8. Once you have events in your FMOD project, in the Flax Editor top menu click the "Plugins->Build Fmod Project option". This will automatically build the FMOD project and generate `FmodEvent`s in the editor. Note: this will take a little bit. Once it is completed a FMOD alert will popup saying that the files have been generated.
 9. Create an `FmodAudioSource` and an `FmodAudioListener` in a scene by right clicking in the scene hierarchy window and going to "New->Audio" context menu.. You can adjust any settings needed.
 10. Assign the `FmodEvent` to the `FmodAudioSource`.
