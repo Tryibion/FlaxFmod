@@ -76,6 +76,31 @@ function exportBusesToJson() {
     console.log("FMOD bus data exported to: " + outputPath);
 }
 
+function exportSnapshotsToJson() {
+
+    // Get a flat list of all snapshots in the project.
+    var snapshots = studio.project.model.Snapshot.findInstances();
+
+    // An array to hold the snapshots data.
+    var snapshotData = [];
+
+    // Iterate through the list of all banks.
+    for (var i = 0; i < snapshots.length; i++) {
+        var snapshot = snapshots[i];
+
+        // Push the bank's path and GUID to our data array.
+        snapshotData.push({
+            "Path": snapshot.getPath(),
+            "Guid": snapshot.id.toString(),
+        });
+    }
+
+    var outputPath = exportData(snapshotData, "fmod_snapshots_export");
+
+    // Log a success message to the FMOD Studio console.
+    console.log("FMOD snapshot data exported to: " + outputPath);
+}
+
 function exportVCAsToJson() {
     // Get all VCAs
     var allVCA = studio.project.model.MixerVCA.findInstances();
@@ -122,5 +147,6 @@ function exportData(data, fileName) {
 exportBanksToJson();
 exportEventsToJson();
 exportBusesToJson();
+exportSnapshotsToJson();
 exportVCAsToJson();
 alert("FMOD project export completed");

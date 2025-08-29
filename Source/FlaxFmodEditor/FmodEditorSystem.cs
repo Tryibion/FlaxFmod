@@ -40,6 +40,7 @@ public class FmodEditorSystem : EditorPlugin
     private SpriteAtlas _fmodBusIcon;
     private SpriteAtlas _fmodVcaIcon;
     private SpriteAtlas _fmodBankIcon;
+    private SpriteAtlas _fmodSnapshotIcon;
     
     private ContextMenu _fModPluginContextMenu;
     private ContextMenuButton _buildButton;
@@ -88,6 +89,10 @@ public class FmodEditorSystem : EditorPlugin
         _fmodBankIcon = Content.Load<SpriteAtlas>("Plugins/FlaxFmod/Content/Editor/Icons/FMOD Bank Image.flax");
         var bankLogoSprite = _fmodBankIcon.FindSprite("Default");
         Editor.ContentDatabase.AddProxy(new SpawnableJsonAssetProxy<FmodBank>(bankLogoSprite));
+        
+        _fmodSnapshotIcon = Content.Load<SpriteAtlas>("Plugins/FlaxFmod/Content/Editor/Icons/FMOD Snapshot Image.flax");
+        var snapshotLogoSprite = _fmodSnapshotIcon.FindSprite("Default");
+        Editor.ContentDatabase.AddProxy(new SpawnableJsonAssetProxy<FmodSnapshot>(snapshotLogoSprite));
 
         Editor.ContentDatabase.Rebuild(true);
 
@@ -316,7 +321,92 @@ public class FmodEditorSystem : EditorPlugin
         CreateBankAssets(settings, studioProjectPath);
         CreateEventAssets(settings, studioProjectPath);
         CreateBusAssets(settings, studioProjectPath);
+        GenerateSnapshotAssets(settings, studioProjectPath);
         CreateVCAAssets(settings, studioProjectPath);
+    }
+
+    private void GenerateSnapshotAssets(FmodAudioSettings settings, string studioProjectPath)
+    {
+         var studioProjectDirectory = Path.GetDirectoryName(studioProjectPath);
+        var snapshotsFilePath = Path.Combine(studioProjectDirectory, "fmod_snapshots_export.json");
+        if (File.Exists(snapshotsFilePath))
+        {
+            var newGuidLocation = Path.Combine(Globals.ProjectSourceFolder, "FMOD", "fmod_snapshots_export.json");
+            Directory.CreateDirectory(Path.GetDirectoryName(newGuidLocation));
+            File.Copy(snapshotsFilePath, newGuidLocation, true);
+
+            // Create individual files for each event.
+            var fileInfo = File.ReadAllText(newGuidLocation);
+            var events = JsonSerializer.Deserialize<List<FmodEditorAsset>>(fileInfo);
+            var snapshotFolder = Path.Combine(Globals.ProjectFolder, settings.EditorStorageRelativeFolderPath, "Snapshots");
+            if (!Directory.Exists(snapshotFolder))
+                Directory.CreateDirectory(snapshotFolder);
+            
+            // Get existing assets.
+            Dictionary<string, JsonAsset> existingAssets = new Dictionary<string, JsonAsset>(); // FMOD Guid, Asset
+            List<JsonAsset> jsonAssetRemovalList = new List<JsonAsset>();
+            var assetIds = Content.GetAllAssetsByType(typeof(FmodSnapshot));
+            foreach (var assetId in assetIds)
+            {
+                var asset = Content.Load<JsonAsset>(assetId);
+                if (asset != null)
+                {
+                    var snapshotInstance = asset.GetInstance<FmodSnapshot>();
+                    existingAssets.Add(snapshotInstance.Guid, asset);
+                    jsonAssetRemovalList.Add(asset);
+                }
+            }
+
+            // Rebuild assets
+            foreach (var evt in events)
+            {
+                var relativesnapshotPath = evt.Path.Replace("snapshot:/", "");
+                relativesnapshotPath += ".json";
+                var savePath = StringUtils.NormalizePath(Path.Combine(snapshotFolder, relativesnapshotPath));
+                var saveFolder =  Path.GetDirectoryName(savePath);
+                
+                if (existingAssets.ContainsKey(evt.Guid))
+                {
+                    var asset = existingAssets[evt.Guid];
+ 
+                    // Don't remove asset because it exists.
+                    jsonAssetRemovalList.Remove(asset);
+                    
+                    // Check path to ensure the correct path. Move if not correct.
+                    if (!asset.Path.Equals(savePath, StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (!Directory.Exists(saveFolder))
+                            Directory.CreateDirectory(saveFolder);
+
+                        var instance = asset.GetInstance<FmodSnapshot>();
+                        instance.Path = evt.Path;
+                        Content.RenameAsset(asset.Path, savePath);
+                    }
+                }
+                else
+                {
+                    // Create new asset.
+                    if (!Directory.Exists(saveFolder))
+                        Directory.CreateDirectory(saveFolder);
+
+                    FmodSnapshot fmodSnapshot = new FmodSnapshot
+                    {
+                        Path = evt.Path,
+                        Guid = evt.Guid,
+                    };
+                    FlaxEditor.Editor.SaveJsonAsset(savePath, fmodSnapshot);
+                }
+            }
+            
+            // Remove not reference json assets.
+            foreach (var asset in jsonAssetRemovalList)
+            {
+                Content.DeleteAsset(asset);
+            }
+            
+            // Remove empty directories.
+            RemoveEmptyDirectories(snapshotFolder);
+        }
     }
 
     private void CreateBankAssets(FmodAudioSettings settings, string studioProjectPath)
@@ -694,6 +784,7 @@ public class FmodEditorSystem : EditorPlugin
         Content.UnloadAsset(_fmodEventIcon);
         Content.UnloadAsset(_fmodVcaIcon);
         Content.UnloadAsset(_fmodBankIcon);
+        Content.UnloadAsset(_fmodSnapshotIcon);
         Content.UnloadAsset(_jsonAsset);
     }
 }
