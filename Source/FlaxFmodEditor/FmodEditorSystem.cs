@@ -352,16 +352,16 @@ public class FmodEditorSystem : EditorPlugin
             }
 
             // Rebuild assets
-            foreach (var vca in banks)
+            foreach (var bank in banks)
             {
-                var relativeBankPath = vca.Path.Replace("bank:/", "");
+                var relativeBankPath = bank.Path.Replace("bank:/", "");
                 relativeBankPath += ".json";
                 var savePath = StringUtils.NormalizePath(Path.Combine(bankFolder, relativeBankPath));
                 var saveFolder =  Path.GetDirectoryName(savePath);
                 
-                if (existingAssets.ContainsKey(vca.Guid))
+                if (existingAssets.ContainsKey(bank.Guid))
                 {
-                    var asset = existingAssets[vca.Guid];
+                    var asset = existingAssets[bank.Guid];
  
                     // Don't remove asset because it exists.
                     jsonAssetRemovalList.Remove(asset);
@@ -372,8 +372,8 @@ public class FmodEditorSystem : EditorPlugin
                         if (!Directory.Exists(saveFolder))
                             Directory.CreateDirectory(saveFolder);
 
-                        var bankInstance = asset.GetInstance<FmodVca>();
-                        bankInstance.Path = vca.Path;
+                        var bankInstance = asset.GetInstance<FmodBank>();
+                        bankInstance.Path = bank.Path;
                         Content.RenameAsset(asset.Path, savePath);
                     }
                 }
@@ -385,8 +385,8 @@ public class FmodEditorSystem : EditorPlugin
 
                     FmodBank fmodBank = new FmodBank
                     {
-                        Path = vca.Path,
-                        Guid = vca.Guid,
+                        Path = bank.Path,
+                        Guid = bank.Guid,
                     };
                     FlaxEditor.Editor.SaveJsonAsset(savePath, fmodBank);
                 }
