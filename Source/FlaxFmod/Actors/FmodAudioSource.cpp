@@ -134,7 +134,7 @@ void FmodAudioSource::Stop()
     if (!CheckForEvent())
         return;
 
-    FmodAudio::GetAudioSystem()->StopEvent(EventInstance, 0);
+    FmodAudio::GetAudioSystem()->StopEvent(EventInstance, FMOD_STUDIO_STOP_ALLOWFADEOUT);
 }
 
 void FmodAudioSource::Pause()
