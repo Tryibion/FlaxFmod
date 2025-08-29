@@ -61,6 +61,16 @@ void FmodAudioSource::SetPitchMultiplier(float value)
         FmodAudio::GetAudioSystem()->SetEventPitchMultiplier(EventInstance, value);
 }
 
+void FmodAudioSource::SetEnableBeatEvents(bool value)
+{
+    _enableBeatEvents = value;
+}
+
+void FmodAudioSource::SetEnableMarkerEvents(bool value)
+{
+    _enableMarkerEvents = value;
+}
+
 float FmodAudioSource::GetEventLength()
 {
     if (!CheckForEvent())
@@ -110,10 +120,11 @@ void FmodAudioSource::Play()
     if (!IsPlaying())
     {
         auto system = FmodAudio::GetAudioSystem();
+        system->RegisterEventCallback(EventInstance, _enableMarkerEvents, _enableBeatEvents);
         float length = system->GetEventLength(EventInstance);
         if (_startTime < length)
             system->SetEventPosition(EventInstance, _startTime);
-        
+
         system->PlayEvent(EventInstance);
     }
 }
@@ -254,7 +265,7 @@ void FmodAudioSource::OnEventLoaded()
         if (Event)
         {
             auto system = FmodAudio::GetAudioSystem();
-            EventInstance = system->CreateEventInstance(Event.GetInstance()->Path);
+            EventInstance = system->CreateEventInstance(Event.GetInstance()->Path, this);
             system->SetEventVolumeMultiplier(EventInstance, _volumeMultiplier);
             system->SetEventPitchMultiplier(EventInstance, _pitchMultiplier);
             system->SetEventMaxDistance(EventInstance, _overrideDistance ? _maxDistance : -1.0f);

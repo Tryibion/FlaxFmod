@@ -22,9 +22,54 @@ private:
     float _maxDistance = 1000.0f;
     float _minDistance = 0.1f;
     float _startTime = 0.0f;
+    bool _enableBeatEvents = false;
+    bool _enableMarkerEvents = true;
     
 public:
 
+    /// <summary>
+    /// Fired when the event is starting to play.
+    /// </summary>
+    API_EVENT() Action EventStarting;
+
+    /// <summary>
+    /// Fired when the event is started.
+    /// </summary>
+    API_EVENT() Action EventStarted;
+
+    /// <summary>
+    /// Fired when a sub event is started.
+    /// </summary>
+    API_EVENT() Action SubEventStarted;
+
+    /// <summary>
+    /// Fired when the event is stopped.
+    /// </summary>
+    API_EVENT() Action EventStopped;
+
+    /// <summary>
+    /// Fired when the event is restarted by calling play again.
+    /// </summary>
+    API_EVENT() Action EventRestarted;
+
+    /// <summary>
+    /// Fired if timeline beat is enabled on the beat.
+    /// Parameters are Beat, Bar, tempo, position
+    /// </summary>
+    API_EVENT() Delegate<int, int, float, int> TimelineBeat;
+
+    /// <summary>
+    /// Fired if timeline beat is enabled on the sub timeline beat.
+    /// Parameters are Beat, Bar, tempo, position
+    /// </summary>
+    API_EVENT() Delegate<int, int, float, int> SubTimelineBeat;
+
+    /// <summary>
+    /// Fired if timeline marker is enabled when a timeline marker occurs.
+    /// Gives the marker name and position.
+    /// </summary>
+    API_EVENT() Delegate<String, int> TimelineMarker;
+    
     /// <summary>
     /// The fmod event asset.
     /// </summary>
@@ -144,9 +189,39 @@ public:
     void SetPitchMultiplier(float value);
 
     /// <summary>
+    /// Whether to enable the beat event for this audio source.
+    /// </summary>
+    API_PROPERTY(Attributes="EditorDisplay(\"Fmod Audio Source\"), EditorOrder(50)")
+    FORCE_INLINE bool GetEnableBeatEvents() const
+    {
+        return _enableBeatEvents;
+    }
+
+    /// <summary>
+    /// Whether to enable the beat event for this audio source.
+    /// </summary>
+    API_PROPERTY()
+    void SetEnableBeatEvents(bool value);
+
+    /// <summary>
+    /// Whether to enable the marker event for this audio source.
+    /// </summary>
+    API_PROPERTY(Attributes="EditorDisplay(\"Fmod Audio Source\"), EditorOrder(51)")
+    FORCE_INLINE bool GetEnableMarkerEvents() const
+    {
+        return _enableMarkerEvents;
+    }
+
+    /// <summary>
+    /// Whether to enable the marker event for this audio source.
+    /// </summary>
+    API_PROPERTY()
+    void SetEnableMarkerEvents(bool value);
+
+    /// <summary>
     /// The initial parameters to set on the event.
     /// </summary>
-    API_FIELD(Attributes="EditorDisplay(\"Fmod Audio Source\"), EditorOrder(50)")
+    API_FIELD(Attributes="EditorDisplay(\"Fmod Audio Source\"), EditorOrder(60)")
     Array<FmodParameter> InitialParameters;
 
     /// <summary>

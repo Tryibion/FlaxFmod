@@ -13,6 +13,7 @@
 #include "Engine/Scripting/Scripting.h"
 #include "Engine/Platform/FileSystem.h"
 
+Dictionary<FMOD::Studio::EventInstance*, FmodAudioSource*> FmodAudioSystem::EventMap;
 
 FmodAudioSystem::FmodAudioSystem(const SpawnParams& params)
     : GamePlugin(params)
@@ -75,7 +76,7 @@ void FmodAudioSystem::Update()
     }
 }
 
-FMOD_RESULT FmodAudioSystem::OnSystemEvent(FMOD_SYSTEM* system, FMOD_SYSTEM_CALLBACK_TYPE type, void* commanddata1, void* commanddata2, void* userdata)
+FMOD_RESULT FmodAudioSystem::OnSystemCallback(FMOD_SYSTEM* system, FMOD_SYSTEM_CALLBACK_TYPE type, void* commanddata1, void* commanddata2, void* userdata)
 {
     auto* audioSystem = static_cast<FmodAudioSystem*>(userdata);
     if (!audioSystem)
@@ -93,6 +94,56 @@ FMOD_RESULT FmodAudioSystem::OnSystemEvent(FMOD_SYSTEM* system, FMOD_SYSTEM_CALL
     {
         audioSystem->UpdateDrivers();
         FmodAudio::AudioDeviceLost();
+    }
+
+    return FMOD_OK;
+}
+
+FMOD_RESULT FmodAudioSystem::OnEventInstanceCallback(FMOD_STUDIO_EVENT_CALLBACK_TYPE type, FMOD_STUDIO_EVENTINSTANCE* event, void* parameters)
+{
+    FMOD::Studio::EventInstance* eventInstance = (FMOD::Studio::EventInstance*)event;
+    if (!eventInstance)
+        return FMOD_OK;
+
+    auto source = EventMap[eventInstance];
+    if (!source)
+        return FMOD_OK;
+
+    if (type == FMOD_STUDIO_EVENT_CALLBACK_STARTING)
+    {
+        source->EventStarting();
+    }
+    else if (type == FMOD_STUDIO_EVENT_CALLBACK_STARTED)
+    {
+        source->EventStarted();
+    }
+    else if (type == FMOD_STUDIO_EVENT_CALLBACK_STOPPED)
+    {
+        source->EventStopped();
+    }
+    else if (type == FMOD_STUDIO_EVENT_CALLBACK_RESTARTED)
+    {
+        source->EventRestarted();
+    }
+    else if (type == FMOD_STUDIO_EVENT_CALLBACK_START_EVENT_COMMAND)
+    {
+        source->SubEventStarted();
+    }
+    else if (type == FMOD_STUDIO_EVENT_CALLBACK_TIMELINE_MARKER)
+    {
+        FMOD_STUDIO_TIMELINE_MARKER_PROPERTIES* markerProperties = (FMOD_STUDIO_TIMELINE_MARKER_PROPERTIES*)parameters;
+        source->TimelineMarker(String(markerProperties->name), markerProperties->position);
+    }
+    else if (type == FMOD_STUDIO_EVENT_CALLBACK_TIMELINE_BEAT)
+    {
+        FMOD_STUDIO_TIMELINE_BEAT_PROPERTIES* beatProperties = (FMOD_STUDIO_TIMELINE_BEAT_PROPERTIES*)parameters;
+        source->TimelineBeat(beatProperties->beat, beatProperties->bar, beatProperties->tempo, beatProperties->position);
+    }
+    else if (type == FMOD_STUDIO_EVENT_CALLBACK_NESTED_TIMELINE_BEAT)
+    {
+        FMOD_STUDIO_TIMELINE_NESTED_BEAT_PROPERTIES* nestedProperties = (FMOD_STUDIO_TIMELINE_NESTED_BEAT_PROPERTIES*)parameters;
+        FMOD_STUDIO_TIMELINE_BEAT_PROPERTIES beatProperties = nestedProperties->properties;
+        source->SubTimelineBeat(beatProperties.beat, beatProperties.bar, beatProperties.tempo, beatProperties.position);
     }
 
     return FMOD_OK;
@@ -129,7 +180,7 @@ void FmodAudioSystem::Initialize()
     _coreSystem->set3DSettings(1, 0.01f, 1);
 
     _coreSystem->setUserData(this); // To use in events
-    _coreSystem->setCallback(&OnSystemEvent, FMOD_SYSTEM_CALLBACK_DEVICELISTCHANGED | FMOD_SYSTEM_CALLBACK_DEVICELOST);
+    _coreSystem->setCallback(&OnSystemCallback, FMOD_SYSTEM_CALLBACK_DEVICELISTCHANGED | FMOD_SYSTEM_CALLBACK_DEVICELOST);
 
     FmodAudio::Initialize();
 
@@ -397,7 +448,7 @@ bool FmodAudioSystem::CheckBankLoaded(const String& bankName)
     return false;
 }
 
-void* FmodAudioSystem::CreateEventInstance(const StringView& eventPath)
+void* FmodAudioSystem::CreateEventInstance(const StringView& eventPath, FmodAudioSource* source)
 {
     FMOD::Studio::EventDescription* eventDescription = nullptr;
     FMOD_RESULT result = _studioSystem->getEvent(eventPath.ToStringAnsi().GetText(), &eventDescription);
@@ -420,10 +471,11 @@ void* FmodAudioSystem::CreateEventInstance(const StringView& eventPath)
     }
 
     FMODLOG(Info, "Event {} created.", eventPath);
+    EventMap.Add(eventInstance, source);
     return eventInstance;
 }
 
-void* FmodAudioSystem::CreateEventInstance(const FMOD_GUID& eventGuid)
+void* FmodAudioSystem::CreateEventInstance(const FMOD_GUID& eventGuid, FmodAudioSource* source)
 {
     FMOD::Studio::EventDescription* eventDescription = nullptr;
     FMOD_RESULT result = _studioSystem->getEventByID(&eventGuid, &eventDescription);
@@ -442,7 +494,7 @@ void* FmodAudioSystem::CreateEventInstance(const FMOD_GUID& eventGuid)
         FMODLOG(Warning, "Failed to create event instance, Error: {}", String(FMOD_ErrorString(result)));
         return nullptr;
     }
-
+    EventMap.Add(eventInstance, source);
     return eventInstance;
 }
 
@@ -461,6 +513,7 @@ void FmodAudioSystem::ReleaseEventInstance(void* eventInstance)
         return;
     }
 
+    EventMap.Remove(eventInstance);
     result = instance->release();
     if (result != FMOD_OK)
         FMODLOG(Warning, "Failed to release event instance. Error: {}", String(FMOD_ErrorString(result)));
@@ -643,6 +696,21 @@ void FmodAudioSystem::SetEventPosition(void* eventInstance, float position)
         return;
     auto instance = static_cast<FMOD::Studio::EventInstance*>(eventInstance);
     instance->setTimelinePosition(static_cast<int>(position * 1000.0f));
+}
+
+void FmodAudioSystem::RegisterEventCallback(void* eventInstance, bool marker, bool beat)
+{
+    FMOD_STUDIO_EVENT_CALLBACK_TYPE callBacks =
+        FMOD_STUDIO_EVENT_CALLBACK_STARTING |
+            FMOD_STUDIO_EVENT_CALLBACK_STARTED |
+                FMOD_STUDIO_EVENT_CALLBACK_STOPPED |
+                    FMOD_STUDIO_EVENT_CALLBACK_RESTARTED |
+                        FMOD_STUDIO_EVENT_CALLBACK_START_EVENT_COMMAND;
+    if (marker)
+        callBacks |= FMOD_STUDIO_EVENT_CALLBACK_TIMELINE_MARKER;
+    if (beat)
+        callBacks |= FMOD_STUDIO_EVENT_CALLBACK_TIMELINE_BEAT | FMOD_STUDIO_EVENT_CALLBACK_NESTED_TIMELINE_BEAT;
+    static_cast<FMOD::Studio::EventInstance*>(eventInstance)->setCallback(&OnEventInstanceCallback, callBacks);
 }
 
 void FmodAudioSystem::SetDriver(int index)

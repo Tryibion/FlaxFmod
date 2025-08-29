@@ -5,6 +5,8 @@
 #include "Engine/Core/Collections/Dictionary.h"
 #include "Engine/Core/Collections/Array.h"
 
+class FmodAudioSource;
+
 API_CLASS() class FLAXFMOD_API FmodAudioSystem : public GamePlugin
 {
     DECLARE_SCRIPTING_TYPE(FmodAudioSystem);
@@ -12,11 +14,13 @@ API_CLASS() class FLAXFMOD_API FmodAudioSystem : public GamePlugin
 private:
     FMOD::Studio::System* _studioSystem = nullptr;
     FMOD::System* _coreSystem = nullptr;
+    static Dictionary<FMOD::Studio::EventInstance*, FmodAudioSource*> EventMap;
     Dictionary<StringView, FMOD::Studio::Bank*> _loadedBanks;
 
     void Update();
 
-    static FMOD_RESULT F_CALL OnSystemEvent(FMOD_SYSTEM* system, FMOD_SYSTEM_CALLBACK_TYPE type, void* commanddata1, void* commanddata2, void* userdata);
+    static FMOD_RESULT F_CALL OnSystemCallback(FMOD_SYSTEM* system, FMOD_SYSTEM_CALLBACK_TYPE type, void* commanddata1, void* commanddata2, void* userdata);
+    static FMOD_RESULT F_CALL OnEventInstanceCallback(FMOD_STUDIO_EVENT_CALLBACK_TYPE type, FMOD_STUDIO_EVENTINSTANCE *event, void *parameters);
 
 public:
     void Initialize() override;
@@ -36,8 +40,8 @@ public:
     bool CheckBankLoaded(const String& bankName);
 
     // Event
-    void* CreateEventInstance(const StringView& eventPath);
-    void* CreateEventInstance(const FMOD_GUID& eventGuid);
+    void* CreateEventInstance(const StringView& eventPath, FmodAudioSource* source);
+    void* CreateEventInstance(const FMOD_GUID& eventGuid, FmodAudioSource* source);
     void ReleaseEventInstance(void* eventInstance);
     void PlayEvent(void* eventInstance);
     bool IsEventPlaying(void* eventInstance);
@@ -56,6 +60,7 @@ public:
     float GetEventLength(void* eventInstance);
     float GetEventPosition(void* eventInstance);
     void SetEventPosition(void* eventInstance, float position);
+    void RegisterEventCallback(void* eventInstance, bool marker, bool beat);
 
     // System
     void SetDriver(int index);
