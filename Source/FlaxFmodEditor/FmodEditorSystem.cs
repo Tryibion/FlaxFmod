@@ -67,10 +67,10 @@ public class FmodEditorSystem : EditorPlugin
             GameSettings.SetCustomSettings("FmodAudioSettings", _jsonAsset);
         }
 
-        ViewportIconsRenderer.AddCustomIcon(typeof(FmodAudioListener), Content.LoadAsync<Texture>(System.IO.Path.Combine(Globals.EngineContentFolder, "Editor/Icons/Textures/AudioListner.flax")));
+        ViewportIconsRenderer.AddCustomIcon(typeof(FmodAudioListener), Content.LoadAsync<Texture>("Plugins/FlaxFmod/Content/Editor/Icons/AudioListener.flax"));
         SceneGraphFactory.CustomNodesTypes.Add(typeof(FmodAudioListener), typeof(FmodAudioListenerNode));
 
-        ViewportIconsRenderer.AddCustomIcon(typeof(FmodAudioSource), Content.LoadAsync<Texture>(System.IO.Path.Combine(Globals.EngineContentFolder, "Editor/Icons/Textures/AudioSource.flax")));
+        ViewportIconsRenderer.AddCustomIcon(typeof(FmodAudioSource), Content.LoadAsync<Texture>("Plugins/FlaxFmod/Content/Editor/Icons/AudioSource.flax"));
         SceneGraphFactory.CustomNodesTypes.Add(typeof(FmodAudioSource), typeof(FmodAudioSourceNode));
 
         _fmodEventIcon = Content.Load<SpriteAtlas>("Plugins/FlaxFmod/Content/Editor/Icons/FMOD Event Image.flax");
