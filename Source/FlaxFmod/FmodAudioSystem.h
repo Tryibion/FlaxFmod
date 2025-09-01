@@ -37,8 +37,8 @@ public:
     float GetMasterPitch();
 
     // Bank
-    void LoadBank(const StringView& bankPath, int loadFlags);
-    void LoadBank(const String& bankName);
+    void LoadBank(const StringView& bankPath, int loadFlags, bool loadSampleData);
+    void LoadBank(const String& bankName, bool loadSampleData);
     void UnloadBank(const StringView& bankPath);
     void UnloadBank(const String& bankName);
     void UnloadAllBanks();

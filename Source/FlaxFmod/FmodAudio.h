@@ -126,7 +126,7 @@ public:
     /// <summary>
     /// Loads a bank based on the bank name. This will resolve the path.
     /// </summary>
-    API_FUNCTION() static void LoadBank(const String& bankName);
+    API_FUNCTION() static void LoadBank(const String& bankName, bool loadSampleData);
 
     /// <summary>
     /// Returns true if the bank is loaded based on the bank name. This will resolve the path.

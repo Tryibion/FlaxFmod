@@ -210,11 +210,16 @@ void FmodAudioSystem::Initialize()
     Array<String> bankFiles;
     FileSystem::DirectoryGetFiles(bankFiles, bankFolder, TEXT("*.bank"));
 
+    if (!FileSystem::DirectoryExists(bankFolder) || bankFiles.Count() == 0)
+    {
+        FMODLOG(Error, "Cannot load banks. No banks found in {}. Please ensure the paths are correct and that the FMOD project is built.", bankFolder);
+    }
+
     // Load master bank first.
     for (const auto& bankFile : bankFiles)
     {
         if (StringUtils::GetFileName(bankFile).Compare(masterBankFileName) == 0 || StringUtils::GetFileName(bankFile).Compare(masterBankStringsFileName) == 0)
-            LoadBank(bankFile, FMOD_STUDIO_LOAD_BANK_NORMAL);
+            LoadBank(bankFile, FMOD_STUDIO_LOAD_BANK_NORMAL, _settings->PreloadBankSampleData);
     }
 
     // Load the rest of the banks if requested.
@@ -225,7 +230,7 @@ void FmodAudioSystem::Initialize()
         {
             if (StringUtils::GetFileName(bankFile).Compare(masterBankFileName) == 0 || StringUtils::GetFileName(bankFile).Compare(masterBankStringsFileName) == 0)
                 continue;
-            LoadBank(bankFile, FMOD_STUDIO_LOAD_BANK_NORMAL);
+            LoadBank(bankFile, FMOD_STUDIO_LOAD_BANK_NORMAL, _settings->PreloadBankSampleData);
         }
     }
     // Load specifically defined banks
@@ -247,7 +252,7 @@ void FmodAudioSystem::Initialize()
             {
                 if (StringUtils::GetFileName(bankFile).Compare(preloadFileName) == 0)
                 {
-                    LoadBank(bankFile, FMOD_STUDIO_LOAD_BANK_NORMAL);
+                    LoadBank(bankFile, FMOD_STUDIO_LOAD_BANK_NORMAL, _settings->PreloadBankSampleData);
                     break;
                 }
             }
@@ -369,7 +374,7 @@ float FmodAudioSystem::GetMasterPitch()
     return pitch;
 }
 
-void FmodAudioSystem::LoadBank(const StringView& bankPath, int loadFlags)
+void FmodAudioSystem::LoadBank(const StringView& bankPath, int loadFlags, bool loadSampleData)
 {
     if (IsBankLoaded(bankPath))
         return;
@@ -381,13 +386,13 @@ void FmodAudioSystem::LoadBank(const StringView& bankPath, int loadFlags)
         FMODLOG(Warning, "Failed to load bank at {}, Error: {}", bankPath, String(FMOD_ErrorString(result)));
         return;
     }
-    if (_settings->PreloadBankSampleData)
+    if (loadSampleData)
         bank->loadSampleData();
     _loadedBanks.Add(bankPath, bank);
     FMODLOG(Info, "Bank {} loaded.", bankPath);
 }
 
-void FmodAudioSystem::LoadBank(const String& bankName)
+void FmodAudioSystem::LoadBank(const String& bankName, bool loadSampleData)
 {
     // Search for bank file in paths.
     auto* settings = FmodAudioSettings::Get();
@@ -428,7 +433,7 @@ void FmodAudioSystem::LoadBank(const String& bankName)
         FMODLOG(Warning, "Failed to load bank at {}, Error: {}", bankPath, String(FMOD_ErrorString(result)));
         return;
     }
-    if (_settings->PreloadBankSampleData)
+    if (loadSampleData)
         bank->loadSampleData();
     _loadedBanks.Add(bankPath, bank);
     FMODLOG(Info, "Bank {} loaded.", bankPath);

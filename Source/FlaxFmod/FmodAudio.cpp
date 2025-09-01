@@ -125,11 +125,11 @@ float FmodAudio::GetGlobalParameter(const String& name)
     return _audioSystem->GetGlobalParameter(name);
 }
 
-void FmodAudio::LoadBank(const String& bankName)
+void FmodAudio::LoadBank(const String& bankName, bool loadSampleData)
 {
     if (!_audioSystem)
         return;
-   _audioSystem->LoadBank(bankName);
+   _audioSystem->LoadBank(bankName, loadSampleData);
 }
 
 bool FmodAudio::IsBankLoaded(const String& bankName)

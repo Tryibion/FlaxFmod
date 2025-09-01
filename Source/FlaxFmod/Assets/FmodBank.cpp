@@ -2,9 +2,9 @@
 
 #include "FlaxFmod/FmodAudio.h"
 
-void FmodBank::Load()
+void FmodBank::Load(bool loadSampleData)
 {
-    FmodAudio::LoadBank(GetBankName());
+    FmodAudio::LoadBank(GetBankName(), loadSampleData);
 }
 
 void FmodBank::Unload()

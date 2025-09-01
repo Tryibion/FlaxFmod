@@ -11,7 +11,7 @@ public:
     /// <summary>
     /// Loads this bank.
     /// </summary>
-    API_FUNCTION() void Load();
+    API_FUNCTION() void Load(bool loadSampleData = true);
 
     /// <summary>
     /// Unloads this bank.
