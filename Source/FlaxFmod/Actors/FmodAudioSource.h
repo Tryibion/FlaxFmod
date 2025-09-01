@@ -24,6 +24,7 @@ private:
     float _startTime = 0.0f;
     bool _enableBeatEvents = false;
     bool _enableMarkerEvents = true;
+    bool _allowFadeout = false;
     
 public:
 
@@ -187,6 +188,21 @@ public:
     /// </summary>
     API_PROPERTY()
     void SetPitchMultiplier(float value);
+
+    /// <summary>
+    /// Whether to allow fadeout when stopped.
+    /// </summary>
+    API_PROPERTY(Attributes="EditorDisplay(\"Fmod Audio Source\"), Limit(0), EditorOrder(42)")
+    FORCE_INLINE bool GetAllowFadeout() const
+    {
+        return _allowFadeout;
+    }
+
+    /// <summary>
+    /// Whether to allow fadeout when stopped.
+    /// </summary>
+    API_PROPERTY()
+    void SetAllowFadeout(bool value);
 
     /// <summary>
     /// Whether to enable the beat event for this audio source.

@@ -61,6 +61,11 @@ void FmodAudioSource::SetPitchMultiplier(float value)
         FmodAudio::GetAudioSystem()->SetEventPitchMultiplier(EventInstance, value);
 }
 
+void FmodAudioSource::SetAllowFadeout(bool value)
+{
+    _allowFadeout = value;
+}
+
 void FmodAudioSource::SetEnableBeatEvents(bool value)
 {
     _enableBeatEvents = value;
@@ -134,7 +139,7 @@ void FmodAudioSource::Stop()
     if (!CheckForEvent())
         return;
 
-    FmodAudio::GetAudioSystem()->StopEvent(EventInstance, FMOD_STUDIO_STOP_ALLOWFADEOUT);
+    FmodAudio::GetAudioSystem()->StopEvent(EventInstance, !_allowFadeout);
 }
 
 void FmodAudioSource::Pause()
