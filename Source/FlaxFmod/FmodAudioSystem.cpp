@@ -158,10 +158,10 @@ void FmodAudioSystem::Initialize()
         return;
     }
 
-    auto* settings = FmodAudioSettings::Get();
+    _settings = FmodAudioSettings::Get();
 
     // TODO: make parameters into settings
-    result = _studioSystem->initialize(settings->MaxChannels, FMOD_STUDIO_INIT_NORMAL, FMOD_INIT_NORMAL, nullptr);
+    result = _studioSystem->initialize(_settings->MaxChannels, FMOD_STUDIO_INIT_NORMAL, FMOD_INIT_NORMAL, nullptr);
     if (result != FMOD_OK)
     {
         FMODLOG(Warning, "Failed to initialize Fmod studio system. Error: {}", *FMOD_ErrorString(result));
@@ -196,12 +196,12 @@ void FmodAudioSystem::Initialize()
     // Always load master banks
 #if USE_EDITOR
     // Todo: make this work for other platforms once supported.
-    auto relativeBankPath = settings->FmodStudioRelativeProjectPath + TEXT("/") + TEXT("Build") + TEXT("/") + TEXT("Desktop");
+    auto relativeBankPath = _settings->FmodStudioRelativeProjectPath + TEXT("/") + TEXT("Build") + TEXT("/") + TEXT("Desktop");
 #else
-    auto relativeBankPath = settings->BuiltProjectBankRelativeFolderPath;
+    auto relativeBankPath = _settings->BuiltProjectBankRelativeFolderPath;
 #endif
 
-    String masterBankName = settings->MasterBankName;
+    String masterBankName = _settings->MasterBankName;
     StringView masterBankFileName = masterBankName + TEXT(".bank");
     StringView masterBankStringsFileName = masterBankName + TEXT(".strings.bank");
 
@@ -218,7 +218,7 @@ void FmodAudioSystem::Initialize()
     }
 
     // Load the rest of the banks if requested.
-    if (settings->LoadAllBanks)
+    if (_settings->LoadAllBanks)
     {
         // Load all other banks
         for (const auto& bankFile : bankFiles)
@@ -231,7 +231,7 @@ void FmodAudioSystem::Initialize()
     // Load specifically defined banks
     else
     {
-        for (auto preloadBankName : settings->BanksToPreload)
+        for (auto preloadBankName : _settings->BanksToPreload)
         {
             StringView preloadFileName;
             if (!preloadBankName.EndsWith(TEXT(".bank")))
@@ -270,6 +270,8 @@ void FmodAudioSystem::Deinitialize()
             FMODLOG(Warning, "Failed to release Fmod studio system. Error: {}", String(FMOD_ErrorString(result)));
         _studioSystem = nullptr;
     }
+
+    _settings = nullptr;
 }
 
 void FmodAudioSystem::SetMasterVolume(float volumeMultiplier)
@@ -379,6 +381,8 @@ void FmodAudioSystem::LoadBank(const StringView& bankPath, int loadFlags)
         FMODLOG(Warning, "Failed to load bank at {}, Error: {}", bankPath, String(FMOD_ErrorString(result)));
         return;
     }
+    if (_settings->PreloadBankSampleData)
+        bank->loadSampleData();
     _loadedBanks.Add(bankPath, bank);
     FMODLOG(Info, "Bank {} loaded.", bankPath);
 }
@@ -424,6 +428,8 @@ void FmodAudioSystem::LoadBank(const String& bankName)
         FMODLOG(Warning, "Failed to load bank at {}, Error: {}", bankPath, String(FMOD_ErrorString(result)));
         return;
     }
+    if (_settings->PreloadBankSampleData)
+        bank->loadSampleData();
     _loadedBanks.Add(bankPath, bank);
     FMODLOG(Info, "Bank {} loaded.", bankPath);
 }

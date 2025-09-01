@@ -64,4 +64,9 @@ public:
     /// The max channels that can be used with the FMOD system when initialized.
     /// </summary>
     API_FIELD(Attributes="EditorDisplay(\"Init\"), Limit(0)") int MaxChannels = 512;
+
+    /// <summary>
+    /// Loads the sample data from banks when they are loaded. Increases memory usage.
+    /// </summary>
+    API_FIELD(Attributes="EditorDisplay(\"Init\")") bool PreloadBankSampleData = true;
 };

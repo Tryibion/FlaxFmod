@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "FmodAudioSettings.h"
 #include "fmod_studio.hpp"
 #include "Engine/Scripting/Plugins/GamePlugin.h"
 #include "Engine/Core/Collections/Dictionary.h"
@@ -14,6 +15,7 @@ API_CLASS() class FLAXFMOD_API FmodAudioSystem : public GamePlugin
 private:
     FMOD::Studio::System* _studioSystem = nullptr;
     FMOD::System* _coreSystem = nullptr;
+    FmodAudioSettings* _settings;
     static Dictionary<FMOD::Studio::EventInstance*, FmodAudioSource*> EventMap;
     Dictionary<StringView, FMOD::Studio::Bank*> _loadedBanks;
 
