@@ -52,6 +52,7 @@ public class FmodEditorSystem : EditorPlugin
     private GameWindow _gameWindow;
     private float _storedMasterVolume;
     private bool _storedMuteAudio;
+    private bool _isPlayModePaused = false;
     
     /// <inheritdoc />
     public override void InitializeEditor()
@@ -153,6 +154,23 @@ public class FmodEditorSystem : EditorPlugin
             FmodAudio.SetMasterVolume(_gameWindow.AudioMuted ? 0.0f : _gameWindow.AudioVolume);
             _storedMasterVolume = _gameWindow.AudioVolume;
             _storedMuteAudio = _gameWindow.AudioMuted;
+        }
+
+        if (Editor.StateMachine.PlayingState.IsPaused)
+        {
+            if (!_isPlayModePaused)
+            {
+                _isPlayModePaused = true;
+                FmodAudio.SetMasterPaused(true);
+            }
+        }
+        else
+        {
+            if (_isPlayModePaused)
+            {
+                _isPlayModePaused = false;
+                FmodAudio.SetMasterPaused(false);
+            }
         }
     }
     
