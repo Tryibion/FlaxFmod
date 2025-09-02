@@ -72,7 +72,7 @@ void FmodAudioSystem::Update()
 
         const auto result = _studioSystem->update();
         if (result != FMOD_OK)
-            FMODLOG(Warning, "Failed to update Fmod studio system. Error: {}", *FMOD_ErrorString(result));
+            FMODLOG(Warning, "Failed to update Fmod studio system. Error: {}", String(FMOD_ErrorString(result)));
     }
 }
 
@@ -154,7 +154,7 @@ void FmodAudioSystem::Initialize()
     auto result = FMOD::Studio::System::create(&_studioSystem);
     if (result != FMOD_OK)
     {
-        FMODLOG(Warning, "Failed to create Fmod studio system. Error: {}", *FMOD_ErrorString(result));
+        FMODLOG(Warning, "Failed to create Fmod studio system. Error: {}", String(FMOD_ErrorString(result)));
         return;
     }
 
@@ -164,14 +164,14 @@ void FmodAudioSystem::Initialize()
     result = _studioSystem->initialize(_settings->MaxChannels, FMOD_STUDIO_INIT_NORMAL, FMOD_INIT_NORMAL, nullptr);
     if (result != FMOD_OK)
     {
-        FMODLOG(Warning, "Failed to initialize Fmod studio system. Error: {}", *FMOD_ErrorString(result));
+        FMODLOG(Warning, "Failed to initialize Fmod studio system. Error: {}", String(FMOD_ErrorString(result)));
         return;
     }
 
     result = _studioSystem->getCoreSystem(&_coreSystem);
     if (result != FMOD_OK)
     {
-        FMODLOG(Warning, "Failed to get Fmod core system. Error: {}", *FMOD_ErrorString(result));
+        FMODLOG(Warning, "Failed to get Fmod core system. Error: {}", String(FMOD_ErrorString(result)));
         return;
     }
 
@@ -522,8 +522,7 @@ void* FmodAudioSystem::CreateEventInstance(const StringView& eventPath, FmodAudi
 
     if (result != FMOD_OK)
     {
-        FMODLOG(Warning, "Failed to get event description at {}, Error: {}", eventPath,
-                String(FMOD_ErrorString(result)));
+        FMODLOG(Warning, "Failed to get event description at {}, Error: {}", eventPath, String(FMOD_ErrorString(result)));
         return nullptr;
     }
 
@@ -532,8 +531,7 @@ void* FmodAudioSystem::CreateEventInstance(const StringView& eventPath, FmodAudi
 
     if (result != FMOD_OK)
     {
-        FMODLOG(Warning, "Failed to create event instance at {}, Error: {}", eventPath,
-                String(FMOD_ErrorString(result)));
+        FMODLOG(Warning, "Failed to create event instance at {}, Error: {}", eventPath, String(FMOD_ErrorString(result)));
         return nullptr;
     }
 
@@ -584,6 +582,7 @@ void FmodAudioSystem::ReleaseEventInstance(void* eventInstance)
     result = instance->release();
     if (result != FMOD_OK)
         FMODLOG(Warning, "Failed to release event instance. Error: {}", String(FMOD_ErrorString(result)));
+
     FMODLOG(Info, "Event released.");
     eventInstance = nullptr;
 }
