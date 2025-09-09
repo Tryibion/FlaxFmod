@@ -742,6 +742,21 @@ float FmodAudioSystem::GetEventLength(void* eventInstance)
     return static_cast<float>(length) * 0.001f;
 }
 
+float FmodAudioSystem::GetEventLength(const String& eventPath)
+{
+    FMOD::Studio::EventDescription* eventDescription = nullptr;
+    auto result = _studioSystem->getEvent(eventPath.ToStringAnsi().GetText(), &eventDescription);
+    if (result != FMOD_OK)
+    {
+        FMODLOG(Warning, "Failed to get event description at {}, Error: {}", eventPath, String(FMOD_ErrorString(result)));
+        return -1.0f;
+    }
+
+    int length = -1;
+    eventDescription->getLength(&length);
+    return static_cast<float>(length) * 0.001f;
+}
+
 float FmodAudioSystem::GetEventPosition(void* eventInstance)
 {
     if (!eventInstance)

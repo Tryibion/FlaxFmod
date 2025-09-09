@@ -64,6 +64,7 @@ public:
     void SetEventParameter(void* eventInstance, const StringView& parameterName, float value);
     float GetEventParameter(void* eventInstance, const StringView& parameterName);
     float GetEventLength(void* eventInstance);
+    float GetEventLength(const String& eventPath);
     float GetEventPosition(void* eventInstance);
     void SetEventPosition(void* eventInstance, float position);
     void RegisterEventCallback(void* eventInstance, bool marker, bool beat);
