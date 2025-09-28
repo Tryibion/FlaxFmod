@@ -18,6 +18,7 @@ private:
     FmodAudioSettings* _settings;
     static Dictionary<FMOD::Studio::EventInstance*, FmodAudioSource*> EventMap;
     Dictionary<StringView, FMOD::Studio::Bank*> _loadedBanks;
+    Array<uint32> _loadedPlugins;
 
     void Update();
 

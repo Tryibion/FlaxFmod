@@ -35,6 +35,12 @@ public:
     API_FIELD() String BuiltProjectBankRelativeFolderPath = TEXT("Content/fmod");
 
     /// <summary>
+    /// The name of the library related to a fmod plugin. This needs to match the plugin's DLL name.
+    /// This will search and use the plugin in the project directory first. If it does not exist it will search in the studio install location.
+    /// </summary>
+    API_FIELD() Array<String> FmodPluginNames;
+
+    /// <summary>
     /// The FMOD folder used for storing generating assets. Please put this in the Content Folder somewhere.
     /// This is relative to the project folder.
     /// </summary>
@@ -46,7 +52,7 @@ public:
     /// This is relative to the project folder.
     /// </summary>
     API_FIELD(Attributes="EditorDisplay(\"Editor\"), CustomEditorAlias(\"FlaxFmod.Editor.FolderPathEditor\")")
-    String FmodStudioRelativeProjectPath = TEXT("FMOD"); // Todo: make this a file path editor
+    String FmodStudioRelativeProjectPath = TEXT("FMOD");
 
     /// <summary>
     /// Editor Only. The environment variable where Fmod studio location is stored. Absolute path will be used if this does not exist.

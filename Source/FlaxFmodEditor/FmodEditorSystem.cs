@@ -118,21 +118,71 @@ public class FmodEditorSystem : EditorPlugin
         if (_jsonAsset)
         {
             var settings = _jsonAsset.GetInstance<FmodAudioSettings>();
-            var builtBankFolderPath = Path.Combine(GameCooker.CurrentData.DataOutputPath, settings.BuiltProjectBankRelativeFolderPath);
+            var buildFolderPath = Path.Combine(GameCooker.CurrentData.DataOutputPath, settings.BuiltProjectBankRelativeFolderPath);
 
             // TODO: Get specific bank folder based on platform.
             var editorBankFolderPath = Path.Combine(Globals.ProjectFolder, settings.FmodStudioRelativeProjectPath, "Build", "Desktop");
             var banks = Directory.GetFiles(editorBankFolderPath, "*.bank", SearchOption.AllDirectories);
             
-            if (!Directory.Exists(builtBankFolderPath))
-                Directory.CreateDirectory(builtBankFolderPath);
+            if (!Directory.Exists(buildFolderPath))
+                Directory.CreateDirectory(buildFolderPath);
 
+            // Move banks to build path
             foreach (var bank in banks)
             {
                 var relativePath = Path.GetRelativePath(editorBankFolderPath, bank);
-                File.Copy(bank, Path.Combine(builtBankFolderPath, relativePath), true);;
+                File.Copy(bank, Path.Combine(buildFolderPath, relativePath), true);
+            }
+
+            // Check and copy plugins if they exist.
+            var pluginNames = settings.FmodPluginNames;
+            if (pluginNames != null && pluginNames.Length > 0)
+            {
+                var buildPluginPath = Path.Combine(buildFolderPath, "plugins");
+                // Check for plugin in studio install path
+                var studioPath = GetFmodStudioPathFolder();
+                var studioPluginsPath = Path.Combine(studioPath, "plugins");
+                CopyPluginsFromPath(pluginNames, studioPluginsPath, buildPluginPath);
+            
+                // Check for plugin in studio project path
+                var projectPluginPath = Path.Combine(Globals.ProjectFolder, settings.FmodStudioRelativeProjectPath, "plugins");
+                CopyPluginsFromPath(pluginNames, projectPluginPath, buildPluginPath);
             }
         }
+    }
+
+    private void CopyPluginsFromPath(string[] pluginNames, string searchPath, string buildPluginPath)
+    {
+        if (Directory.Exists(searchPath))
+        {
+            if (!Directory.Exists(buildPluginPath))
+                Directory.CreateDirectory(buildPluginPath);
+
+            var pluginFiles = Directory.GetFiles(searchPath);
+            foreach (var pluginFile in pluginFiles)
+            {
+                foreach (var name in pluginNames)
+                {
+                    if (name.Equals(Path.GetFileNameWithoutExtension(pluginFile), StringComparison.OrdinalIgnoreCase) || name.Equals(Path.GetFileName(pluginFile), StringComparison.OrdinalIgnoreCase))
+                    {
+                        File.Copy(pluginFile, Path.Combine(buildPluginPath, Path.GetFileName(pluginFile)), true);
+                    }
+                }
+            }
+        }
+    }
+
+    private string GetFmodStudioPathFolder()
+    {
+        var settings = _jsonAsset.GetInstance<FmodAudioSettings>();
+
+        // Get studio install path.
+        var studioPath = Environment.GetEnvironmentVariable(settings.FmodStudioLocationEnvironmentVariable);
+        if (string.IsNullOrEmpty(studioPath))
+            studioPath = StringUtils.NormalizePath(settings.FmodStudioInstallLocation);
+        else
+            studioPath = StringUtils.NormalizePath(studioPath);
+        return studioPath;
     }
 
     private void OnPlayModeBegin()
@@ -249,11 +299,7 @@ public class FmodEditorSystem : EditorPlugin
             return false;
         
         // Get studio install path.
-        studioPath = Environment.GetEnvironmentVariable(settings.FmodStudioLocationEnvironmentVariable);
-        if (string.IsNullOrEmpty(studioPath))
-            studioPath = StringUtils.NormalizePath(settings.FmodStudioInstallLocation);
-        else
-            studioPath = StringUtils.NormalizePath(studioPath);
+        studioPath = GetFmodStudioPathFolder();
         studioProjectPath = StringUtils.NormalizePath(Path.Combine(Globals.ProjectFolder, settings.FmodStudioRelativeProjectPath));
 
         if (Directory.Exists(studioPath))
@@ -347,6 +393,20 @@ public class FmodEditorSystem : EditorPlugin
         CreateBusAssets(settings, studioProjectPath);
         GenerateSnapshotAssets(settings, studioProjectPath);
         CreateVCAAssets(settings, studioProjectPath);
+        
+        // Check and copy plugins if they exist.
+        var pluginNames = settings.FmodPluginNames;
+        if (pluginNames != null && pluginNames.Length > 0)
+        {
+            var editorPluginPath = Path.Combine(Globals.ProjectFolder, settings.EditorStorageRelativeFolderPath, "Plugins");
+            // Check for plugin in studio install path
+            var studioPluginsPath = Path.Combine(Path.GetDirectoryName(studioPath), "plugins");
+            CopyPluginsFromPath(pluginNames, studioPluginsPath, editorPluginPath);
+            
+            // Check for plugin in studio project path
+            var projectPluginPath = Path.Combine(Globals.ProjectFolder, settings.FmodStudioRelativeProjectPath, "plugins");
+            CopyPluginsFromPath(pluginNames, projectPluginPath, editorPluginPath);
+        }
     }
 
     private void GenerateSnapshotAssets(FmodAudioSettings settings, string studioProjectPath)

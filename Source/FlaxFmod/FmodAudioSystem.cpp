@@ -193,6 +193,48 @@ void FmodAudioSystem::Initialize()
 
     Scripting::Update.Bind<FmodAudioSystem, &FmodAudioSystem::Update>(this);
 
+    // Load plugins if any.
+#if USE_EDITOR
+    // Todo: make this work for other platforms once supported.
+    auto relativePluginsPath = _settings->EditorStorageRelativeFolderPath + TEXT("/") + TEXT("Plugins");
+#else
+    auto relativePluginsPath = _settings->BuiltProjectBankRelativeFolderPath + TEXT("/") + TEXT("plugins");
+#endif
+    
+    auto pluginFolder = Globals::ProjectFolder + TEXT("/") + relativePluginsPath;
+    auto pluginNames = _settings->FmodPluginNames;
+    if (FileSystem::DirectoryExists(pluginFolder) && pluginNames.Count() > 0)
+    {
+        Array<String> pluginFiles;
+        FileSystem::DirectoryGetFiles(pluginFiles, pluginFolder);
+        if (pluginFiles.Count() > 0)
+        {
+            for (int i = 0; i < pluginNames.Count(); i++)
+            {
+                auto& pluginName = pluginNames[i];
+                for (int j = 0; j < pluginFiles.Count(); j++)
+                {
+                    auto pluginFileName = StringUtils::GetFileNameWithoutExtension(pluginFiles[j]);
+                    if (pluginName.Compare(pluginFileName.ToString(), StringSearchCase::IgnoreCase) == 0)
+                    {
+                        
+                        auto& pluginPath = pluginFiles[j];
+                        uint32 pluginHandle;
+                        result = _coreSystem->loadPlugin(pluginPath.ToStringAnsi().GetText(), &pluginHandle);
+                        if (result != FMOD_OK)
+                        {
+                            FMODLOG(Warning, "Cannot load fmod plugin: {}.", pluginName);
+                            break;
+                        }
+                        _loadedPlugins.Add(pluginHandle);
+                        FMODLOG(Info, "Loaded fmod plugin: {}.", pluginName);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
     // Always load master banks
 #if USE_EDITOR
     // Todo: make this work for other platforms once supported.
@@ -200,7 +242,7 @@ void FmodAudioSystem::Initialize()
 #else
     auto relativeBankPath = _settings->BuiltProjectBankRelativeFolderPath;
 #endif
-
+    
     String masterBankName = _settings->MasterBankName;
     StringView masterBankFileName = masterBankName + TEXT(".bank");
     StringView masterBankStringsFileName = masterBankName + TEXT(".strings.bank");
@@ -267,6 +309,11 @@ void FmodAudioSystem::Deinitialize()
     UnloadAllBanks();
 
     Scripting::Update.Unbind<FmodAudioSystem, &FmodAudioSystem::Update>(this);
+
+    for (auto pluginHandle : _loadedPlugins)
+    {
+        _coreSystem->unloadPlugin(pluginHandle);
+    }
 
     if (_studioSystem)
     {
