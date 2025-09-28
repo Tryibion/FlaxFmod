@@ -12,7 +12,6 @@ FMOD Library used is version 2.03.08
 
 ## Limitation
 - Only windows has been tested.
-- FMOD plugins are not supported yet.
 
 ## Installation
 To add this plugin project to your game, follow the instructions in the [Flax Engine documentation](https://docs.flaxengine.com/manual/scripting/plugins/plugin-project.html#automated-git-cloning) for adding a plugin project automatically using git or manually.
@@ -30,6 +29,9 @@ To add this plugin project to your game, follow the instructions in the [Flax En
 10. Assign the `FmodEvent` to the `FmodAudioSource`.
 11. Disable the Flax Engine audio in the `AudioSettings`, unless you want to use both...
 12. Play the scene and hear the music!
+
+## FMOD Plugins
+FMOD plugins can be used by including the dll or library name without the extension in the `FmodPluginNames` list which can be found in the `FmodAudioSettings`. Plugins found in the fmod project plugins folder will override any plugins found in the FMOD install plugins folder. This Flax plugin will copy the library files into the ouput build location.
 
 ## Important classes
 - `FmodAudioSource` - the Actor used to create an FMOD event instance and play the instance in the world.
