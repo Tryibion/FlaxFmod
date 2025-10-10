@@ -163,7 +163,10 @@ public class FmodEditorSystem : EditorPlugin
             {
                 foreach (var name in pluginNames)
                 {
-                    if (name.Equals(Path.GetFileNameWithoutExtension(pluginFile), StringComparison.OrdinalIgnoreCase) || name.Equals(Path.GetFileName(pluginFile), StringComparison.OrdinalIgnoreCase))
+                    if (!name.Equals(Path.GetFileNameWithoutExtension(pluginFile), StringComparison.OrdinalIgnoreCase) && !name.Equals(Path.GetFileName(pluginFile), StringComparison.OrdinalIgnoreCase))
+                        continue;
+                    var newPath = Path.Combine(buildPluginPath, Path.GetFileName(pluginFile));
+                    if (!File.Exists(newPath))
                     {
                         File.Copy(pluginFile, Path.Combine(buildPluginPath, Path.GetFileName(pluginFile)), true);
                     }
