@@ -239,7 +239,7 @@ public class FmodEditorSystem : EditorPlugin
         
         ProcessStartInfo startInfo = new ProcessStartInfo
         {
-            FileName = StringUtils.NormalizePath(projectPath),
+            FileName = $"\"{StringUtils.NormalizePath(projectPath)}\"",
             CreateNoWindow = true,
 #if PLATFORM_WINDOWS
             UseShellExecute = true,
@@ -265,7 +265,7 @@ public class FmodEditorSystem : EditorPlugin
         ProcessStartInfo startInfo = new ProcessStartInfo
         {
             FileName = studioPath,
-            Arguments = $"-build {projectPath}",
+            Arguments = $"-build \"{projectPath}\"",
             CreateNoWindow = true,
             UseShellExecute = false,
             RedirectStandardOutput = true,
@@ -377,7 +377,7 @@ public class FmodEditorSystem : EditorPlugin
         ProcessStartInfo startInfo = new ProcessStartInfo
         {
             FileName = studioPath,
-            Arguments = $"-script {pathToScript} {studioProjectPath}",
+            Arguments = $"-script \"{pathToScript}\" \"{studioProjectPath}\"",
             CreateNoWindow = true,
             UseShellExecute = false,
             RedirectStandardOutput = true,
