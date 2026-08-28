@@ -59,6 +59,21 @@ public class FlaxFmod : GameModule
                 options.Libraries.Add(Path.Combine(linStudioLibPath, "libfmodstudio.so.14.8."));
                 options.Libraries.Add(Path.Combine(linStudioLibPath, "libfmodstudioL.so.14.8."));
                 break;
+            case TargetPlatform.Mac:
+                // FMod Core Library
+                var macCoreLibPath = Path.Combine(fmodPath, "Mac", "core");
+                options.Libraries.Add(Path.Combine(macCoreLibPath, "libfmod.dylib"));
+                options.Libraries.Add(Path.Combine(macCoreLibPath, "libfmodL.dylib"));
+                options.DependencyFiles.Add(Path.Combine(macCoreLibPath, "libfmod.dylib"));
+                options.DependencyFiles.Add(Path.Combine(macCoreLibPath, "libfmodL.dylib"));
+
+                // FMod Studio Library
+                var macStudioLibPath = Path.Combine(fmodPath, "Mac", "studio");
+                options.Libraries.Add(Path.Combine(macStudioLibPath, "libfmodstudio.dylib"));
+                options.Libraries.Add(Path.Combine(macStudioLibPath, "libfmodstudioL.dylib"));
+                options.DependencyFiles.Add(Path.Combine(macStudioLibPath, "libfmodstudio.dylib"));
+                options.DependencyFiles.Add(Path.Combine(macStudioLibPath, "libfmodstudioL.dylib"));
+                break;
             default:
                 break;
         }
