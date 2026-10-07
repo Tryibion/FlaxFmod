@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Flax.Build;
 using Flax.Build.NativeCpp;
 
@@ -45,25 +46,62 @@ public class FlaxFmod : GameModule
             case TargetPlatform.Linux:
                 // FMod Core Library
                 var linCoreLibPath = Path.Combine(fmodPath, "Linux", "core");
-                options.DependencyFiles.Add(Path.Combine(linCoreLibPath, "libfmod.so.14.8"));
-                options.DependencyFiles.Add(Path.Combine(linCoreLibPath, "libfmodL.so.14.8"));
+
+                var coreLib = FindVersionedSo(linCoreLibPath, "libfmod");
+                var coreLibL = FindVersionedSo(linCoreLibPath, "libfmodL");
+
+                options.DependencyFiles.Add(Path.Combine(linCoreLibPath, coreLib));
+                options.DependencyFiles.Add(Path.Combine(linCoreLibPath, coreLibL));
                 // Hack for versioned so files. Add "." after version for library
-                options.Libraries.Add(Path.Combine(linCoreLibPath, "libfmod.so.14.8."));
-                options.Libraries.Add(Path.Combine(linCoreLibPath, "libfmodL.so.14.8."));
+                options.Libraries.Add(Path.Combine(linCoreLibPath, coreLib));
+                options.Libraries.Add(Path.Combine(linCoreLibPath, coreLibL));
 
                 // FMod Studio Library
                 var linStudioLibPath = Path.Combine(fmodPath, "Linux", "studio");
-                options.DependencyFiles.Add(Path.Combine(linStudioLibPath, "libfmodstudio.so.14.8"));
-                options.DependencyFiles.Add(Path.Combine(linStudioLibPath, "libfmodstudioL.so.14.8"));
+
+                var studioLib = FindVersionedSo(linStudioLibPath, "libfmodstudio");
+                var studioLibL = FindVersionedSo(linStudioLibPath, "libfmodstudioL");
+
+                options.DependencyFiles.Add(Path.Combine(linStudioLibPath, studioLib));
+                options.DependencyFiles.Add(Path.Combine(linStudioLibPath, studioLibL));
                 // Hack for versioned so files. Add "." after version for library
-                options.Libraries.Add(Path.Combine(linStudioLibPath, "libfmodstudio.so.14.8."));
-                options.Libraries.Add(Path.Combine(linStudioLibPath, "libfmodstudioL.so.14.8."));
+                options.Libraries.Add(Path.Combine(linStudioLibPath, studioLib));
+                options.Libraries.Add(Path.Combine(linStudioLibPath, studioLibL));
                 break;
             default:
                 break;
         }
     }
-    
+
+    // Find the .so version files name
+    string FindVersionedSo(string directory, string baseName)
+    {
+        var files = Directory.GetFiles(directory, $"{baseName}.so.*");
+
+        if (files.Length is 0)
+            throw new Exception($"{baseName} libraries not found in: {directory}");
+
+        if (files.Length is 1)
+            return Path.GetFileName(files[0]);
+
+        var latestVersion = files.OrderByDescending(f =>
+        {
+            var versionPart = Path.GetFileName(f)
+            .Replace($"{baseName}.so.", "");
+
+            var parts = versionPart.Split('.')
+            .Select(p => int.TryParse(p, out int n) ? n : 0)
+            .ToArray();
+            
+            return parts.Length >= 2 ? 
+            parts[0] * 10000 + parts[1] 
+            : 0;
+
+        }).First();
+
+        return Path.GetFileName(latestVersion);
+    }
+
     /// <inheritdoc />
     public override void GetFilesToDeploy(List<string> files)
     {
